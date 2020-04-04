@@ -7,8 +7,6 @@ import {CREATE_GAME} from '../../constants/message-types';
 import {DECIDING_ROLES, JOIN_GAME} from '../../constants/screens';
 
 const startGame = async () => {
-  // socket stuff..
-
   const gameId = Math.round(Math.random() * 1000);
   await send({gameId}, CREATE_GAME);
 

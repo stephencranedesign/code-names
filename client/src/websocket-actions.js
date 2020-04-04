@@ -1,8 +1,8 @@
 import {registerMessageHandler} from './websocket-wrapper';
-import {CAPTAIN_CLAIMED, GAME_STATUS_CHANGE} from './constants/message-types';
+import {CAPTAIN_CLAIMED, GAME_STATUS_CHANGE, NEW_CLUE} from './constants/message-types';
 import {PLAYING} from './constants/game-statuses';
 import {GAME_BOARD, DECIDING_ROLES} from './constants/screens';
-import {setState, getRoles} from './state-management';
+import {setState, getRoles, getClues} from './state-management';
 
 const onMessage = (data) => {
     console.log('onMessage: ', data);
@@ -20,6 +20,13 @@ const onMessage = (data) => {
         const screen = gameStatus === PLAYING ? GAME_BOARD : DECIDING_ROLES;
 
         setState({gameStatus, screen});
+    } else if (data.type === NEW_CLUE) {
+        const clues = getClues();
+        clues.push(data.clue);
+
+        console.log({clues});
+
+        setState({clues});
     }
 };
 

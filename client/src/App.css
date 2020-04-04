@@ -10,10 +10,9 @@
 
 .container {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   flex: 1 1 auto;
+  height: calc(100vh - 50px);
+  overflow-y: scroll;
 }
 
 .button {
@@ -21,10 +20,9 @@
 }
 
 .team-turn-tracker {
-  top: 0;
-  left: 0;
-  width: 100%;
-  border-bottom: 1px solid #fff;
+  height: 51px;
+  flex: 1 1 100%;
+  border-bottom: 1px solid #a1a4ae;
 }
 
 .team-turn-tracker div {
@@ -34,7 +32,7 @@
 }
 
 .team-turn-tracker div:first-child {
-  border-right: 1px solid #fff;
+  border-right: 1px solid #a1a4ae;
   width: calc(50% - 1px);
 }
 
@@ -56,7 +54,7 @@
 }
 
 .cards li {
-  border: 1px solid #fff;
+  border: 1px solid #a1a4ae;
   padding: 2em;
   flex: 1 1 auto;
   margin: .5em;
@@ -69,8 +67,8 @@
   width: 15px;
   height: 15px;
   position: absolute;
-  border-left: 1px solid #fff;
-  border-bottom: 1px solid #fff;
+  border-left: 1px solid #a1a4ae;
+  border-bottom: 1px solid #a1a4ae;
   top: 0;
   right: 0;
 }
@@ -84,7 +82,7 @@
 }
 
 .cards li.black:before {
-  background-color: black;
+  background-color: #181a20;
 }
 
 .cards li.neutral:before {
@@ -107,4 +105,46 @@
   left: 0;
   font-size: .6em;
   padding: 2px 6px;
+}
+
+.clue-tracker {
+  padding: 8px;
+  background-color: #181a20;
+  border-bottom: 1px solid #a1a4ae;
+  text-align: left;
+  font-size: 16px;
+}
+
+.clues {
+  margin: 0 0 10px;
+  padding: 6px 0 0;
+  list-style: none;
+}
+
+.submit-clue {
+  padding: 4px;
+}
+
+.submit-clue input {
+  width: 100%;
+  padding: 4px;
+  border: 1px solid #a1a4ae;
+  margin-bottom: 2px;
+}
+
+@media (min-width: 700px) {
+  .app {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .clue-tracker {
+    border-right: 1px solid #a1a4ae;
+    border-bottom: none;
+    flex: 0 1 200px;
+  }
+
+  .container {
+    flex: 1 1 400px;
+  }
 }

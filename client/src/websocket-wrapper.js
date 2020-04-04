@@ -40,17 +40,14 @@ function heartbeat() {
     }, 30000 + 1000);
 }
 
-export const send = (payload, type, target = SELF) => {
+export const send = (payload, type) => {
     const id = `${Math.round(Math.random() * 1000000)}-${Math.round(Math.random() * 1000000)}`;
     const promise = promiseFactory();
     const message = JSON.stringify({
         payload,
         type,
-        id,
-        target
+        id
     });
-
-    console.log('sending: ', message);
 
     storePromise(id, promise);
     socket.send(message);

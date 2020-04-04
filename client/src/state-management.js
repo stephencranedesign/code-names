@@ -1,5 +1,5 @@
 import {RED} from './constants/colors';
-import {HOME} from './constants/screens';
+import {HOME, GAME_BOARD} from './constants/screens';
 
 let state;
 let setStateFunc;
@@ -19,18 +19,24 @@ export const changeTeamTurn = () => {
 };
 
 export const getRoles = () => state.roles;
+export const getClues = () => state.clues;
 export const setState = obj => setStateFunc(obj);
 
 export const getDefaultState = () => ({
+    // screen: GAME_BOARD,
     screen: HOME,
     activeTeam: RED,
     roles: {
         blueTeamCaptainClaimed: false,
         redTeamCaptainClaimed: false,
         chosenTeam: null,
-        isCaptain: false
+        isCaptain: false,
+        // isCaptain: true
     },
-    cards: [],
+    // clues: [{word: 'bill', number: 2, team: 'red'}, {word: 'bob', number: 2, team: 'blue'}],
+    // cards: Array(25).fill().map((a, i) => ({word: `test-${i}`})),
+    clues: [],
+    cards: [], 
     gameId: null,
     gameStatus: null
 });

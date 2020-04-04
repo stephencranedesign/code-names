@@ -30,7 +30,7 @@ export class DecidingRoles extends React.Component {
             captain
         };
 
-        const response = await send(payload, JOIN_TEAM, GAME);
+        const response = await send(payload, JOIN_TEAM);
 
         if (response.type === ERROR) {
             this.setState({

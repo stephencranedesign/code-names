@@ -1,6 +1,7 @@
 import React from 'react';
 import {changeTeamTurn} from '../../state-management';
 import {TeamTurnTracker} from '../Team-Turn-Tracker';
+import {ClueTracker} from '../Clue-Tracker';
 
 const selectCard = (props) => () => {
     if (!props.activeTeam === props.roles.chosenTeam) return;
@@ -23,6 +24,7 @@ export const GameBoard = (props) => {
     return (
         <React.Fragment>
             <TeamTurnTracker activeTeamTurn={props.activeTeam}/>
+            <ClueTracker clues={props.clues} isCaptain={props.isCaptain} gameId={props.gameId} team={props.team} />
             <div className='container'>
                 <ul className='cards'>
                     {cards}

@@ -42,6 +42,7 @@ const createGame = (gameId) => {
         captainCards,
         cards: cards,
         currentTeam: RED,
+        clues: [],
         roles: {
             blueTeamCaptainClaimed: false,
             redTeamCaptainClaimed: false,

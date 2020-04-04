@@ -7,5 +7,7 @@ module.exports = {
     OK: 'ok',
     ERROR: 'error',
     CAPTAIN_CLAIMED: 'captain-claimed',
-    GAME_STATUS_CHANGE: 'game-status-change'
+    GAME_STATUS_CHANGE: 'game-status-change',
+    SUBMIT_CLUE: 'submit-clue',
+    NEW_CLUE: 'new-clue'
 };

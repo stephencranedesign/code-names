@@ -20,6 +20,8 @@ class App extends React.Component {
   }
 
   getComponentForScreen() {
+    console.log('state: ', this.state);
+    
     switch (this.state.screen) {
       case JOIN_GAME:
         return <JoinGame />
@@ -27,7 +29,7 @@ class App extends React.Component {
         return <DecidingRoles roles={this.state.roles} gameId={this.state.gameId} />
       case GAME_BOARD:
         console.log('state cards: ', this.state.cards);
-        return <GameBoard cards={this.state.cards} activeTeam={this.state.activeTeam} roles={this.state.roles} />
+        return <GameBoard cards={this.state.cards} activeTeam={this.state.activeTeam} roles={this.state.roles} clues={this.state.clues} isCaptain={this.state.roles.isCaptain} gameId={this.state.gameId} team={this.state.roles.chosenTeam} />
       default:
         return <Home />;
     }
