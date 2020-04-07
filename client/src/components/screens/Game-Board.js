@@ -2,10 +2,13 @@ import React from 'react';
 import {changeTeamTurn} from '../../state-management';
 import {TeamTurnTracker} from '../Team-Turn-Tracker';
 import {ClueTracker} from '../Clue-Tracker';
+import {send} from '../../websocket-wrapper';
+import {CHOOSE_CARD} from '../../constants/message-types';
 
-const selectCard = (props) => () => {
-    if (!props.activeTeam === props.roles.chosenTeam) return;
+const selectCard = (props, card) => async (e) => {
+    if (props.activeTeam != props.roles.chosenTeam) return;
 
+    const response = await send({gameId: props.gameId, card}, CHOOSE_CARD);
     // do socket stuff.
     changeTeamTurn()
 };
@@ -24,8 +27,8 @@ export const GameBoard = (props) => {
     return (
         <React.Fragment>
             <TeamTurnTracker activeTeamTurn={props.activeTeam}/>
-            <ClueTracker clues={props.clues} isCaptain={props.isCaptain} gameId={props.gameId} team={props.team} />
-            <div className='container'>
+            <ClueTracker clues={props.clues} isCaptain={props.roles.isCaptain} gameId={props.gameId} team={props.roles.chosenTeam} />
+            <div className='card-container'>
                 <ul className='cards'>
                     {cards}
                 </ul>

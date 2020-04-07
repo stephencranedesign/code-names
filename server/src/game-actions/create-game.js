@@ -2,7 +2,7 @@ const Chance = require('chance');
 const {WORDS} = require('../words');
 const {setGame, getGameForNormalPlayer} = require('../db');
 const {RED, BLACK, BLUE, NEUTRAL} = require('../../../client/src/constants/colors');
-const {DECIDING_ROLES} = require('../../../client/src/constants/screens');
+const {DECIDING_ROLES} = require('../../../client/src/constants/game-statuses');
 
 const chance = new Chance();
 
@@ -30,16 +30,17 @@ const createGame = (gameId) => {
             color: NEUTRAL
         };
     });
-    const captainCards = chance.shuffle(unshuffledCaptainCards);
-    const cards = captainCards.map(({word}, i) => ({
+
+    const cards = chance.shuffle(unshuffledCaptainCards).map(({word, color}, i) => ({
         id: i,
-        word
+        word,
+        color,
+        revealed: false
     }));
 
     console.log({cards});
     
     setGame(gameId, {
-        captainCards,
         cards: cards,
         currentTeam: RED,
         clues: [],
@@ -51,7 +52,7 @@ const createGame = (gameId) => {
             chosenTeam: null
         },
         gameId,
-        screen: DECIDING_ROLES
+        gameStatus: DECIDING_ROLES
     });
 
     return getGameForNormalPlayer(gameId);

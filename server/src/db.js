@@ -1,10 +1,13 @@
-const db = {};
+let db = {};
 
 const getGame = (id) => db[id];
 const setGame = (id, game) => {
     db[id] = game;
 
     console.log({db});
+}
+const reset = () => {
+    db = {};
 }
 
 const getGameForNormalPlayer = (id) => {
@@ -32,4 +35,4 @@ const purgeOldGames = (activeGameIds) => {
     console.log({db});
 };
 
-module.exports = {getGame, setGame, getGameForNormalPlayer, purgeOldGames};
+module.exports = {getGame, setGame, reset, getGameForNormalPlayer, purgeOldGames};

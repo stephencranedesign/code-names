@@ -10,6 +10,13 @@
 
 .container {
   display: flex;
+  height: 100vh;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.card-container {
+  display: flex;
   flex: 1 1 auto;
   height: calc(100vh - 50px);
   overflow-y: scroll;

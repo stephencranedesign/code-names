@@ -36,6 +36,19 @@ function create(messageHandler) {
                 });
             }
 
+            function sendToGameAndSelf(gameId, messageToClient) {
+                wss.clients.forEach(function each(client) {
+                    if (client.readyState != WebSocket.OPEN) return;
+
+                    const isClientSender = client === ws;
+                    addGameIdToClient(messageToClient, client, isClientSender);
+
+                    if (client.gameId == gameId) {
+                        client.send(JSON.stringify(messageToClient));
+                    }
+                });
+            }
+
             function sendToSelf(messageToClient) {
                 wss.clients.forEach(function each(client) {
                     if (client.readyState != WebSocket.OPEN) return;
@@ -49,7 +62,7 @@ function create(messageHandler) {
                 });
             }
 
-            messageHandler(messageFromClient, {sendToEveryone, sendToGame, sendToSelf});
+            messageHandler(messageFromClient, {sendToEveryone, sendToGame, sendToSelf, sendToGameAndSelf});
         });
 
         ws.on('close', () => {
@@ -90,6 +103,8 @@ function create(messageHandler) {
             ws.ping(() => {});
         });
     }, 30000);
+
+    return wss;
 }
 
 module.exports = {create};
