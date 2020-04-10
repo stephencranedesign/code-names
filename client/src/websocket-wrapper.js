@@ -1,5 +1,4 @@
 import {promiseFactory, storePromise, getPromise} from './promise-factory';
-import {SELF} from './constants/message-response-targets';
 
 let onMessage = () => {};
 

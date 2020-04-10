@@ -40,12 +40,7 @@ export class ClueTracker extends React.Component {
             return <p>{this.state.error}</p>
         }
     }
-
-    isWordValid() {
-        const {wordForClue} = this.state;
-        const alphaCharactersOnly = /^[a-zA-z]+$/.test(wordForClue);
-    }
-
+    
     submitClue() {
         const {wordForClue, numberForClue} = this.state;
 

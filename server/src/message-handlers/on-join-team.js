@@ -62,7 +62,6 @@ function respondToRoleSelection(message, isRequestSuccesful, fullGame, {sendToGa
 
 function onJoinTeam(message, senders) {
     const {gameId, team, captain} = message.payload;
-    console.log('payload: ', message.payload);
 
     const fullGame = getGame(gameId);
     const isRequestSuccesful = captain ? claimCaptainAttempt(fullGame, team) : joinTeamAttempt(fullGame, team);

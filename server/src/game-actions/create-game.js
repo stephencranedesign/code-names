@@ -37,8 +37,6 @@ const createGame = (gameId) => {
         color,
         revealed: false
     }));
-
-    console.log({cards});
     
     setGame(gameId, {
         cards: cards,
@@ -52,6 +50,8 @@ const createGame = (gameId) => {
             chosenTeam: null
         },
         gameId,
+        blueCorrectGuesses: 0,
+        redCorrectGuesses: 0,
         gameStatus: DECIDING_ROLES
     });
 

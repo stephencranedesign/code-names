@@ -28,7 +28,49 @@ function revealCard({cards}, card) {
     return masterCard;
 }
 
-function onChooseCard(message, {sendToGame, sendToSelf, sendToGameAndSelf}) {
+function getLastClueForCorrectGuess({clues}) {
+    const lastClue = clues.slice(-1)[0];
+
+    if (!lastClue.correctGuesses) {
+        lastClue.correctGuesses = 0;
+    }
+
+    ++lastClue.correctGuesses;
+    return lastClue;
+}
+
+function hasTeamWon(fullGame) {
+    const correctGuessesProp = `${fullGame.currentTeam}CorrectGuesses`;
+    ++fullGame[correctGuessesProp];
+
+    if (fullGame.currentTeam === RED) {
+        return fullGame[correctGuessesProp] === 9;
+    } else {
+        return fullGame[correctGuessesProp] === 8;
+    }
+}
+
+function handleCorrectGuess(fullGame, revealedCard, {sendToGameAndSelf}) {
+    const {gameId} = fullGame;
+    const isGameOver = hasTeamWon(fullGame);
+    const lastClue = getLastClueForCorrectGuess(fullGame);
+    const shouldChangeTurn = lastClue.correctGuesses > lastClue.number;
+    const shouldPromptRandomGuess = lastClue.correctGuesses === lastClue.number;
+
+    if (isGameOver) {
+        sendToGameAndSelf(gameId, {type: GAME_OVER, winner: fullGame.currentTeam});
+    } else if (shouldChangeTurn) {
+        changeTurn(fullGame);
+        sendToGameAndSelf(gameId, {type: CARD_CHOOSEN, revealedCard, currentTeam: fullGame.currentTeam, promptRandomGuess: false});
+    } else if (shouldPromptRandomGuess) {
+        sendToGameAndSelf(gameId, {type: CARD_CHOOSEN, revealedCard, currentTeam: fullGame.currentTeam, promptRandomGuess: true});
+    } else {
+        sendToGameAndSelf(gameId, {type: CARD_CHOOSEN, revealedCard, currentTeam: fullGame.currentTeam, promptRandomGuess: false});
+    }
+}
+
+function onChooseCard(message, senders) {
+    const {sendToGameAndSelf} = senders;
     const {gameId, card} = message.payload;
     const fullGame = getGame(gameId);
     const revealedCard = revealCard(fullGame, card);
@@ -42,17 +84,9 @@ function onChooseCard(message, {sendToGame, sendToSelf, sendToGameAndSelf}) {
     } else if (isOtherTeamsColor(fullGame, revealedCard)) {
         changeTurn(fullGame);
         sendToGameAndSelf(gameId, {type: CARD_CHOOSEN, revealedCard, currentTeam: fullGame.currentTeam});
+    } else if (!isOtherTeamsColor(fullGame, revealedCard)) {
+        handleCorrectGuess(fullGame, revealedCard, senders);
     }
-
-    /*
-        1) did you guess a card that fits with the current team?
-         - yes > 
-           - if the current team has more active clues, don't change turns
-           - if they guesse
-         - no > change turns.
-         - all > reveal what card that was to everyone.
-         - figure out if a team won..
-    */
 }
 
 module.exports = {onChooseCard};

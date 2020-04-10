@@ -7,8 +7,6 @@ function create(messageHandler) {
     const wss = new WebSocket.Server({ port: 8081 });
 
     wss.on('connection', function connection(ws) {
-        console.log('hi from server connection');
-
         ws.isAlive = true;
         ws.on('pong', heartbeat);
         ws.on('message', (data) => {

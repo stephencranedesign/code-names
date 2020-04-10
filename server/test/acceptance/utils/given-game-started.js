@@ -1,24 +1,47 @@
 
 const {promiseGenerator} = require('./promise-generator');
 const {connectToSocket} = require('./connect-to-socket');
-const {CREATE_GAME, JOIN_TEAM, CAPTAIN_CLAIMED, OK} = require('../../../client/src/constants/message-types');
-const {RED, BLUE} = require('../../../client/src/constants/colors');
+const {CREATE_GAME, JOIN_TEAM, CAPTAIN_CLAIMED, OK, SUBMIT_CLUE, NEW_CLUE} = require('../../../../client/src/constants/message-types');
+const {RED, BLUE} = require('../../../../client/src/constants/colors');
 const Chance = require('chance');
 
 const chance = new Chance();
 
 async function givenGameStarted() {
     const gameId = chance.integer({min: 1, max: 100});
-    const {blueTeamCaptain, redTeamCaptain, game} = await givenConnectedTeamCaptains(gameId);
-    const {redTeamMember, blueTeamMember} = await givenConnectedTeamMembers(gameId);
+    const {blueTeamCaptain, redTeamCaptain, game: gameForCaptains} = await givenConnectedTeamCaptains(gameId);
+    const {redTeamMember, blueTeamMember, game: gameForTeamMembers} = await givenConnectedTeamMembers(gameId);
+    const clientNotInGame = await connectToSocket('ws://localhost:8081/');
 
     return {
         blueTeamCaptain,
         redTeamCaptain,
         blueTeamMember,
         redTeamMember,
+        clientNotInGame,
         gameId,
-        game
+        gameForCaptains,
+        gameForTeamMembers
+    }
+} 
+
+async function givenGameStartedWithClue(clue) {
+    const gameId = chance.integer({min: 1, max: 100});
+    const {blueTeamCaptain, redTeamCaptain, game: gameForCaptains} = await givenConnectedTeamCaptains(gameId);
+    const {redTeamMember, blueTeamMember, game: gameForTeamMembers} = await givenConnectedTeamMembers(gameId);
+    const clientNotInGame = await connectToSocket('ws://localhost:8081/');
+    
+    await submitClue(redTeamCaptain, clue, gameId);
+
+    return {
+        blueTeamCaptain,
+        redTeamCaptain,
+        blueTeamMember,
+        redTeamMember,
+        clientNotInGame,
+        gameId,
+        gameForCaptains,
+        gameForTeamMembers
     }
 } 
 
@@ -78,4 +101,17 @@ async function joinGame(client, gameId, team, captain) {
     return promise.promise;
 }
 
-module.exports = {givenGameStarted};
+async function submitClue(client, clue, gameId) {
+    const promise = promiseGenerator();
+
+    client.setOnMessage((data) => {
+        if (data.type === NEW_CLUE) {
+            promise.resolve(data);
+        }
+    });
+    client.sendMessage({type: SUBMIT_CLUE, payload: {clue, gameId}});
+
+    return promise.promise;
+}
+
+module.exports = {givenGameStarted, givenGameStartedWithClue};
