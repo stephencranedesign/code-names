@@ -20,8 +20,6 @@ class App extends React.Component {
   }
 
   getComponentForScreen() {
-    console.log('state: ', this.state);
-    
     switch (this.state.screen) {
       case JOIN_GAME:
         return <JoinGame />

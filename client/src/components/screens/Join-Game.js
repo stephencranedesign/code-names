@@ -1,5 +1,6 @@
 import React from 'react';
 import {JOIN_GAME, OK, ERROR} from '../../constants/message-types';
+import {GAME_BOARD, DECIDING_ROLES} from '../../constants/screens';
 import {setState as setAppState} from '../../state-management';
 import {send} from '../../websocket-wrapper';
 
@@ -24,7 +25,8 @@ export class JoinGame extends React.Component {
         const response = await send({gameId: this.state.gameId}, JOIN_GAME);
 
         if (response.type === OK) {
-            const {cards, currentTeam, roles, screen} = response.game;
+            const {cards, currentTeam, roles, gameStatus} = response.game;
+            const screen = gameStatus === DECIDING_ROLES ? DECIDING_ROLES : GAME_BOARD;
 
             const newState = {
                 cards,
