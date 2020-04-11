@@ -5,15 +5,12 @@ import {GAME_BOARD, DECIDING_ROLES} from './constants/screens';
 import {setState, getRoles, getClues} from './state-management';
 
 const onMessage = (data) => {
-    console.log('onMessage: ', data);
-
     if (data.type === CAPTAIN_CLAIMED) {
         const {team} = data;
         const teamCaptainPickedKey = `${team.toLowerCase()}TeamCaptainClaimed`;
         const roles = getRoles();
         roles[teamCaptainPickedKey] = true;
         
-        console.log({roles});
         setState({roles});
     } else if (data.type === GAME_STATUS_CHANGE) {
         const {gameStatus} = data;
@@ -23,8 +20,6 @@ const onMessage = (data) => {
     } else if (data.type === NEW_CLUE) {
         const clues = getClues();
         clues.push(data.clue);
-
-        console.log({clues});
 
         setState({clues});
     }

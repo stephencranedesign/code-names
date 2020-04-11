@@ -3,8 +3,6 @@ let db = {};
 const getGame = (id) => db[id];
 const setGame = (id, game) => {
     db[id] = game;
-
-    // console.log({db});
 }
 const reset = () => {
     db = {};
@@ -17,7 +15,11 @@ const getGameForNormalPlayer = (id) => {
 
     return {
         ...game,
-        captainCards: null
+        cards: game.cards.map(({id, word, revealed}) => ({
+            id,
+            word,
+            revealed
+        }))
     };
 };
 

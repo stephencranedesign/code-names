@@ -48,6 +48,8 @@ function respondToRoleSelection(message, isRequestSuccesful, fullGame, {sendToGa
     const {id, payload} = message;
     const {gameId, team, captain} = payload;
 
+    
+
     if (!captain) { // successful join team request
         return sendToSelf({type: OK, id, game: getGameForNormalPlayer(gameId)});
     }

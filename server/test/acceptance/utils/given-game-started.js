@@ -49,12 +49,13 @@ async function givenConnectedTeamMembers(gameId) {
     const redTeamMember = await connectToSocket('ws://localhost:8081/');
     const blueTeamMember = await connectToSocket('ws://localhost:8081/');
 
-    await joinGame(redTeamMember, gameId, RED, false);
+    const {game} = await joinGame(redTeamMember, gameId, RED, false);
     await joinGame(blueTeamMember, gameId, BLUE, false);
 
     return {
         redTeamMember,
-        blueTeamMember
+        blueTeamMember,
+        game
     }
 }
 
