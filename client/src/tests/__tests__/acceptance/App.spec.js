@@ -1,35 +1,21 @@
-// import React from 'react';
-// import App from '../../App';
-// import {shallow} from 'enzyme';
-// import {setState} from '../../state-management';
+import {whenSocketSends} from '../../mocks';
 import {Home} from '../../../components/screens/Home';
 import {GameBoard} from '../../../components/screens/Game-Board';
-import {renderAppInState, getDefaultState} from '../../utils';
+import {JoinGame} from '../../../components/screens/Join-Game';
+import {renderAppInState} from '../../utils';
 
-test('test initial render', () => {
-    const {wrapper} = renderAppInState();
+test('test initial render', async () => {
+    const {wrapper} = renderAppInState({
+        screen: 'join-game'
+    });
 
-    // console.log({bill});
-    console.log('hi: ', wrapper.is('div'));
-    expect(wrapper.is('div')).toBe(true);
-    expect(wrapper.childAt(0).is(Home)).toBe(true);
+    whenSocketSends({type: 'join-game'}).respondWith({type: 'ok', game: {
+        roles: {},
+        cards: [],
+    }});
+
+    await wrapper.find('.container .button').props().onClick();
+
+    wrapper.update();
+    expect(wrapper.childAt(0).childAt(0).is(JoinGame)).toBe(false);
 });
-
-test('test setting screen to game board', () => {
-    const defaultState = getDefaultState();
-    const {wrapper, setState} = renderAppInState();
-
-    setState({
-        ...defaultState,
-        screen: 'game-board'
-    })
-
-    // console.log({bill});
-    console.log('hi: ', wrapper.is('div'));
-    expect(wrapper.is('div')).toBe(true);
-    expect(wrapper.childAt(0).is(GameBoard)).toBe(true);
-});
-
-// function givenAppState(state) {
-
-// }
