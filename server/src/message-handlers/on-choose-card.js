@@ -2,17 +2,10 @@ const {CARD_CHOOSEN} = require('../../../client/src/constants/message-types');
 const {GAME_OVER} = require('../../../client/src/constants/game-statuses');
 const {NEUTRAL, RED, BLUE, BLACK} = require('../../../client/src/constants/colors');
 const {getGame} = require('../db');
+const {getOtherTeam, changeTurn} = require('./game-helpers');
 
 function isOtherTeamsColor(fullGame, revealedCard) {
     return getOtherTeam(fullGame) === revealedCard.color
-}
-
-function getOtherTeam(game) {
-    return game.currentTeam === BLUE ? RED : BLUE;
-}
-
-function changeTurn(game) {
-    game.currentTeam = getOtherTeam(game);
 }
 
 function isColor(game, card, color) {
@@ -55,7 +48,7 @@ function handleCorrectGuess(fullGame, revealedCard, {sendToGameAndSelf}) {
     const isGameOver = hasTeamWon(fullGame);
     const lastClue = getLastClueForCorrectGuess(fullGame);
     const shouldChangeTurn = lastClue.correctGuesses > lastClue.number;
-    const shouldPromptRandomGuess = lastClue.correctGuesses === lastClue.number;
+    const shouldPromptRandomGuess = lastClue.correctGuesses == lastClue.number;
 
     if (isGameOver) {
         sendToGameAndSelf(gameId, {type: GAME_OVER, winner: fullGame.currentTeam});
@@ -70,6 +63,7 @@ function handleCorrectGuess(fullGame, revealedCard, {sendToGameAndSelf}) {
 }
 
 function onChooseCard(message, senders) {
+    console.log({message});
     const {sendToGameAndSelf} = senders;
     const {gameId, card} = message.payload;
     const fullGame = getGame(gameId);

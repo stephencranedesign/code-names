@@ -47,8 +47,6 @@ export class ClueTracker extends React.Component {
         const isWordValid = /^[a-zA-z]+$/.test(wordForClue);
         const isNumberValid = /^[1-8]$/.test(numberForClue);
 
-        console.log('submitClue: ', isWordValid, isNumberValid);
-
         if (!isWordValid) {
             this.setState({
                 error: 'Clue must be only one word with no special characters in it'
@@ -65,7 +63,6 @@ export class ClueTracker extends React.Component {
             };
             const payload = {clue, gameId: this.props.gameId};
 
-            console.log('sending clue: ', payload);
             send(payload, SUBMIT_CLUE);
             this.setState({...DEFAULT_STATE});
         }

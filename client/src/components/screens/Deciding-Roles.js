@@ -70,8 +70,8 @@ export class DecidingRoles extends React.Component {
         return (
             <React.Fragment>
                 {this.renderErrorMessage()}
-                {!this.props.roles.blueTeamCaptainClaimed && <button className='button' onClick={() => this.chooseRole(BLUE, true)}>Join Blue Team as Captain</button>}
                 {!this.props.roles.redTeamCaptainClaimed && <button className='button' onClick={() => this.chooseRole(RED, true)}>Join Red Team as Captain</button>}
+                {!this.props.roles.blueTeamCaptainClaimed && <button className='button' onClick={() => this.chooseRole(BLUE, true)}>Join Blue Team as Captain</button>}
                 <button className='button' onClick={() => this.chooseRole(RED)}>Join Red Team</button>
                 <button className='button' onClick={() => this.chooseRole(BLUE)}>Join Blue Team</button>
             </React.Fragment>

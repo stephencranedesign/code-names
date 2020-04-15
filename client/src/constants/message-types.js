@@ -13,5 +13,7 @@ module.exports = {
     NEW_CLUE: 'new-clue',
     CHOOSE_CARD: 'choose-card',
     CARD_CHOOSEN: 'card-choosen',
-    GAME_OVER
+    GAME_OVER,
+    PROMPT_RANDOM_GUESS_ANSWER: 'prompt-random-guess-answer',
+    CHANGE_TURN: 'change-turn'
 };

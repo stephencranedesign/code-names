@@ -18,8 +18,6 @@ socket.addEventListener('message', (event) => {
     const data = JSON.parse(event.data);
     const storedPromise = getPromise(data.id);
 
-    console.log({data});
-
     if (storedPromise) {
         storedPromise.resolve(data);
     }
@@ -47,7 +45,7 @@ export const send = (payload, type) => {
         type,
         id
     });
-
+    
     storePromise(id, promise);
     socket.send(message);
 
