@@ -11,6 +11,8 @@ describe('UI Acceptance Tests: Game Board', () => {
         const state = givenGameBoardState();
         const card = getRandomCard(state);
         const {wrapper} = renderAppInState(state);
+
+        console.log('html: ', wrapper.debug());
     
         await chooseCard(wrapper, card, {
             type: CARD_CHOOSEN,
@@ -43,7 +45,7 @@ describe('UI Acceptance Tests: Game Board', () => {
         });
 
         assertScreen(wrapper, GAME_OVER);
-        expect(wrapper.find('.game-over').text()).toBe(`Team ${BLUE} won`)
+        expect(wrapper.find('.game-over p').text()).toBe(`Team ${BLUE} won!!!`)
     });
 
     test('when selecting the other teams card', async () => {
@@ -110,10 +112,9 @@ function assertScreen(wrapper, screen) {
         const gameBoard = wrapper.childAt(0).childAt(0);
         const teamTurnTracker = gameBoard.childAt(0);
         const clueTracker = gameBoard.childAt(1);
-        // add promptRandomGuess
-        const cardContainer = gameBoard.childAt(3);
+        const cardContainer = gameBoard.childAt(2);
 
-        expect(gameBoard.children()).toHaveLength(4);
+        expect(gameBoard.children()).toHaveLength(3);
         
         expect(teamTurnTracker.is(TeamTurnTracker)).toBe(true);
         expect(clueTracker.is(ClueTracker)).toBe(true);

@@ -25,18 +25,20 @@ export const setState = obj => setStateFunc(obj);
 
 export const getDefaultState = () => ({
     // screen: GAME_BOARD,
-    screen: HOME,
     activeTeam: RED,
+    screen: HOME,
     roles: {
         blueTeamCaptainClaimed: false,
-        redTeamCaptainClaimed: false,
-        chosenTeam: RED,
-        isCaptain: false
+        redTeamCaptainClaimed: false
+        // isCaptain: true,
+        // chosenTeam: RED
     },
     // clues: [{word: 'bill', number: 2, team: 'red'}, {word: 'bob', number: 2, team: 'blue'}],
     // cards: Array(25).fill().map((a, i) => ({word: `test-${i}`})),
+    // promptRandomGuess: true,
     clues: [],
     cards: [], 
     gameId: null,
-    gameStatus: null
+    gameStatus: null,
+    promptRandomGuess: false
 });

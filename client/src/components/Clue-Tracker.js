@@ -5,7 +5,8 @@ import {send} from '../websocket-wrapper';
 function toClue(clue) {
     return (
         <li key={clue.word}>
-            {clue.team.toUpperCase()}: {clue.word} for {clue.number}
+            <span className={`square ${clue.team}`}></span>
+            <span className='clue'>{clue.word} for {clue.number}</span>
         </li>
     )
 }
@@ -30,7 +31,7 @@ export class ClueTracker extends React.Component {
     getOnChange(prop) {
         return function(e) {
             this.setState({
-                [prop]: e.target.value
+                [prop]: e.target.value.trim()
             })
         }
     }
@@ -59,7 +60,7 @@ export class ClueTracker extends React.Component {
             const clue = {
                 word: wordForClue,
                 number: numberForClue,
-                team: this.props.team
+                team: this.props.roles.chosenTeam
             };
             const payload = {clue, gameId: this.props.gameId};
 
@@ -69,13 +70,13 @@ export class ClueTracker extends React.Component {
     }
 
     renderSumbitClue() {
-        if (this.props.isCaptain) {
+        if (this.props.roles.isCaptain && this.props.roles.chosenTeam === this.props.activeTeam) {
             return (
                 <div className='submit-clue'>
                     {this.renderError()}
                     <input type='text' value={this.state.wordForClue} onChange={this.onChangeWord} placeholder='Enter a single word clue' />
                     <input type='text' value={this.state.numberForClue} onChange={this.onChangeNumber} placeholder='How many cards does your clue reference?'/>
-                    <button onClick={this.submitClue}>Submit Clue</button>
+                    <button className='button' onClick={this.submitClue}>Submit Clue</button>
                 </div>
             );
         }
@@ -87,9 +88,11 @@ export class ClueTracker extends React.Component {
         return (
             <div className='clue-tracker'>
                 Clues:
-                <ul className='clues'>
-                    {clues}
-                </ul>
+                <div className='clues'>
+                    <ul>
+                        {clues}
+                    </ul>
+                </div>
                 {this.renderSumbitClue(this.props)}
             </div>
         );

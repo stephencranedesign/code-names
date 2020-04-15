@@ -71,7 +71,7 @@ function create(messageHandler) {
     });
 
     function addGameIdToClient(messageToClient, client, isClientSender) {
-        if (messageToClient.type === OK && !client.gameId && isClientSender) {
+        if (messageToClient.type === OK && isClientSender) {
             client.gameId = messageToClient.game.gameId;
         }
     }

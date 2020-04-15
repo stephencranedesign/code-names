@@ -84,8 +84,10 @@ export class DecidingRoles extends React.Component {
         return (
             <React.Fragment>
                 <div className='container'>
-                    <h2>Game Id: {this.props.gameId}</h2>
-                    {content}
+                    <div>
+                        <h2>Game Id: {this.props.gameId}</h2>
+                        {content}
+                    </div>
                 </div>
             </React.Fragment>
         )

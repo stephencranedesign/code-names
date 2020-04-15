@@ -35,14 +35,24 @@ class App extends React.Component {
     }
   }
 
-  render() {
-    const {chosenTeam, isCaptain} = this.state.roles;
-    const captain = isCaptain ? 'captain' : '';
+  renderClasses() {
+    const classes = ['app'];
+    const {activeTeam, roles, screen} = this.state;
+    const {chosenTeam, isCaptain} = roles;
 
+    classes.push(screen);
+    if (chosenTeam) classes.push(`choosen-team-${chosenTeam}`);
+    if (activeTeam) classes.push(`${activeTeam}-active`);
+    if (isCaptain) classes.push('captain');
+
+    return classes.join(' ');
+  }
+
+  render() {
     storeState(this.state);
 
     return (
-      <div className={`app choosen-team-${chosenTeam} ${this.state.activeTeam}-active ${captain}`}>
+      <div className={this.renderClasses()}>
         {this.getComponentForScreen()}
       </div>
     );

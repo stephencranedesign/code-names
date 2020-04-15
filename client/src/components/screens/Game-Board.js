@@ -7,9 +7,13 @@ import {send} from '../../websocket-wrapper';
 import {CHOOSE_CARD} from '../../constants/message-types';
 
 const selectCard = (props, card) => async (e) => {
-    if (props.activeTeam != props.roles.chosenTeam || props.roles.isCaptain) return;
+    const {activeTeam, roles, gameId, clues = []} = props;
+    const latestClue = clues[clues.length - 1];
 
-    await send({gameId: props.gameId, card}, CHOOSE_CARD);
+    if (!latestClue || latestClue.team !== activeTeam) return;
+    if (activeTeam != roles.chosenTeam || roles.isCaptain) return;
+
+    await send({gameId, card}, CHOOSE_CARD);
 };
 
 const getCardsClasses = (card) => {
@@ -20,19 +24,30 @@ const displayRevealed = (card) => card.revealed ? 'revealed' : '';
 const toCard = (props) => (card, i) => (
     <li className={getCardsClasses(card)} onClick={selectCard(props, card)} key={card.word}>
         <span className='id'>{i+1}</span>
-        {card.word}
+        <span className='word'>{card.word}</span>
     </li>
 );
+
+const renderGameInfo = (props) => {
+    return (
+        <div className='game-info'>
+            <span className='game-id'>GameId: {props.gameId}</span>
+            <span className='choosen-team'>Your Team:</span>
+            <span className={`square ${props.roles.chosenTeam}`}></span>
+        </div>
+    )
+};
 
 export const GameBoard = (props) => {
     const cards = props.cards.map(toCard(props));
 
     return (
         <React.Fragment>
-            <TeamTurnTracker activeTeamTurn={props.activeTeam}/>
-            <ClueTracker clues={props.clues} isCaptain={props.roles.isCaptain} gameId={props.gameId} team={props.roles.chosenTeam} />
-            <PromptRandomGuess show={props.promptRandomGuess} gameId={props.gameId} />
+            <TeamTurnTracker/>
+            <ClueTracker clues={props.clues} gameId={props.gameId} roles={props.roles} activeTeam={props.activeTeam} />
             <div className='card-container'>
+                {renderGameInfo(props)}
+                <PromptRandomGuess show={props.promptRandomGuess} gameId={props.gameId} />
                 <ul className='cards'>
                     {cards}
                 </ul>

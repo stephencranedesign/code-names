@@ -1,6 +1,6 @@
 import React from 'react';
 import {JOIN_GAME, OK, ERROR} from '../../constants/message-types';
-import {GAME_BOARD, DECIDING_ROLES} from '../../constants/screens';
+import {DECIDING_ROLES} from '../../constants/screens';
 import {setState as setAppState} from '../../state-management';
 import {send} from '../../websocket-wrapper';
 
@@ -25,13 +25,13 @@ export class JoinGame extends React.Component {
         const response = await send({gameId: this.state.gameId}, JOIN_GAME);
 
         if (response.type === OK) {
-            const {cards, currentTeam, roles, gameStatus} = response.game;
-            const screen = gameStatus === DECIDING_ROLES ? DECIDING_ROLES : GAME_BOARD;
+            const {cards, currentTeam, roles, gameStatus, clues} = response.game;
 
             const newState = {
+                clues,
                 cards,
                 currentTeam,
-                screen,
+                screen: DECIDING_ROLES,
                 roles,
                 gameId: this.state.gameId
             };
@@ -53,10 +53,12 @@ export class JoinGame extends React.Component {
     render() {
         return (
             <React.Fragment>
-                {this.renderError()}
                 <div className='container'>
-                    <input type='text' value={this.state.gameId} onChange={this.updateValue} />
-                    <button className='button' onClick={this.joinGame}>Join Game</button>
+                    <div>
+                        {this.renderError()}
+                        <input type='text' placeholder='GameId' value={this.state.gameId} onChange={this.updateValue} />
+                        <button className='button' onClick={this.joinGame}>Join Game</button>
+                    </div>
                 </div>
             </React.Fragment>
         )

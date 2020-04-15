@@ -31,8 +31,12 @@ function givenCards() {
     }))
 }
 
-export function givenGameBoardState(overrides = {}) {
+export function givenGameBoardState(roleOverrides = { chosenTeam: RED }, overrides = {}) {
     const defaultState = getDefaultState();
+    const clues = [{
+        team: roleOverrides.chosenTeam,
+        word: chance.string()
+    }]
 
     return {
         ...defaultState,
@@ -40,9 +44,10 @@ export function givenGameBoardState(overrides = {}) {
         gameId: `gameId-${Math.floor(Math.random() * 1000)}`,
         gameStatus: PLAYING,
         cards: givenCards(),
+        clues,
         roles: {
             ...defaultState.roles,
-            chosenRole: defaultState.activeTeam
+            ...roleOverrides
         },
         ...overrides
     }

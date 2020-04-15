@@ -63,7 +63,6 @@ function handleCorrectGuess(fullGame, revealedCard, {sendToGameAndSelf}) {
 }
 
 function onChooseCard(message, senders) {
-    console.log({message});
     const {sendToGameAndSelf} = senders;
     const {gameId, card} = message.payload;
     const fullGame = getGame(gameId);

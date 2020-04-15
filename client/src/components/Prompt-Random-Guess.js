@@ -10,9 +10,9 @@ export const PromptRandomGuess = (props) => {
     if (props.show) {
         return (
             <div className='random-guess'>
-                <p>You correctly guessed the number of cards your clue was for. Would you like to take a random guess?</p>
-                <button onClick={() => takeRandomGuess(props, true)}>Yes</button>
-                <button onClick={() => takeRandomGuess(props, false)}>No</button>
+                <p>You correctly guessed the number of cards for the clue. Would you like to take a random guess?</p>
+                <button className='button' onClick={() => takeRandomGuess(props, true)}>Yes</button>
+                <button className='button' onClick={() => takeRandomGuess(props, false)}>No</button>
             </div>
         );
     }

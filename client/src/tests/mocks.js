@@ -65,7 +65,7 @@ function recursivelyCheckIfMessageSent(messageToMatch, onMessageHandler, message
                 recursivelyCheckIfMessageSent(messageToMatch, onMessageHandler, messageToSend, promise, ++attempt);
             }, 10)
         } else {
-            throw new Error(`socket send was never called with message: ${messageToMatch}`);
+            throw new Error(`socket send was never called with message: ${JSON.stringify(messageToMatch)}`);
         }
     }
 }

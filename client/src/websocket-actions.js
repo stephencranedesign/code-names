@@ -2,7 +2,7 @@ import {registerMessageHandler} from './websocket-wrapper';
 import {CAPTAIN_CLAIMED, GAME_STATUS_CHANGE, NEW_CLUE, CARD_CHOOSEN, GAME_OVER, CHANGE_TURN} from './constants/message-types';
 import {PLAYING} from './constants/game-statuses';
 import {GAME_BOARD, DECIDING_ROLES} from './constants/screens';
-import {setState, getRoles, getClues} from './state-management';
+import {setState, getRoles, getClues, getDefaultState} from './state-management';
 import {onCardChoosen} from './messages/on-card-choosen';
 
 const onMessage = (data) => {
@@ -27,6 +27,7 @@ const onMessage = (data) => {
         onCardChoosen(data);
     } else if (data.type === GAME_OVER) {
         setState({
+            ...getDefaultState(),
             screen: GAME_OVER,
             gameStatus: GAME_OVER,
             winner: data.winner
