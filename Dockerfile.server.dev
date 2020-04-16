@@ -1,0 +1,12 @@
+FROM node:alpine
+
+WORKDIR '/app'
+
+COPY ./server/package.json .
+RUN npm install
+COPY ./server .
+
+COPY ./ui/src/constants ./constants
+RUN npm run copy-constants
+
+CMD ["npm", "run", "start"]

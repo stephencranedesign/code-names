@@ -1,4 +1,4 @@
-const {OK} = require('../../../client/src/constants/message-types');
+const {OK} = require('../constants').messageTypes;
 const {createGame} = require('../game-actions/create-game');
 
 function onCreateGame(message, {sendToSelf}) {

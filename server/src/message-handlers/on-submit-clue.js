@@ -1,4 +1,4 @@
-const {NEW_CLUE} = require('../../../client/src/constants/message-types');
+const {NEW_CLUE} = require('../constants').messageTypes;
 const {getGame} = require('../db');
 
 function onSubmitClue(message, {sendToGame, sendToSelf}) {

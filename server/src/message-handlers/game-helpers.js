@@ -1,4 +1,4 @@
-const {RED, BLUE} = require('../../../client/src/constants/colors');
+const {RED, BLUE} = require('../constants').colors;
 
 function getOtherTeam(game) {
     return game.currentTeam === BLUE ? RED : BLUE;

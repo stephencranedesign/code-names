@@ -1,7 +1,9 @@
-const {OK, ERROR, CAPTAIN_CLAIMED, GAME_STATUS_CHANGE} = require('../../../client/src/constants/message-types');
-const {RED, BLUE} = require('../../../client/src/constants/colors');
-const {PLAYING} = require('../../../client/src/constants/game-statuses');
+const constants = require('../constants');
 const {getGameForNormalPlayer, getGame} = require('../db');
+
+const {OK, ERROR, CAPTAIN_CLAIMED, GAME_STATUS_CHANGE} = constants.messageTypes;
+const {RED, BLUE} = constants.colors;
+const {PLAYING} = constants.gameStatuses;
 
 function getCaptainClaimedProp(team) {
     return `${team.toLowerCase()}TeamCaptainClaimed`;

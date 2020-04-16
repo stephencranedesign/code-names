@@ -4,13 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "cd ./client && npm run build",
+    "build": "cd ./ui && npm run build",
     "start:server": "cd ./server && npm run start",
     "test:server": "cd ./server && npm run test",
-    "start:client": "cd ./client && npm run start",
-    "test:client": "cd ./client && npm run test",
-    "test": "npm run test:server && npm run test:client",
-    "start": "concurrently --kill-others-on-fail \"npm run start:client\" \"npm run start:server\""
+    "start:ui": "cd ./ui && npm run start",
+    "test:ui": "cd ./ui && npm run test",
+    "test": "npm run test:server && npm run test:ui",
+    "start": "concurrently --kill-others-on-fail \"npm run start:ui\" \"npm run start:server\""
   },
   "author": "",
   "license": "ISC",
