@@ -1,7 +1,9 @@
 const express = require('express');
 const app = express();
 const http = require('http').createServer(app);
-const {CREATE_GAME, OK, JOIN_GAME, ERROR, JOIN_TEAM, SUBMIT_CLUE, CHOOSE_CARD, PROMPT_RANDOM_GUESS_ANSWER} = require('../../client/src/constants/message-types');
+const path = require('path');
+
+const {CREATE_GAME, OK, JOIN_GAME, ERROR, JOIN_TEAM, SUBMIT_CLUE, CHOOSE_CARD, PROMPT_RANDOM_GUESS_ANSWER} = require('./constants').messageTypes;
 const {getGameForNormalPlayer, getGame} = require('./db');
 const {onCreateGame, onJoinGame, onJoinTeam, onSubmitClue, onChooseCard, onPromptRandomGuess} = require('./message-handlers');
 
@@ -28,6 +30,12 @@ function start() {
             console.log('no type for message: ', message);
         }
     });
+
+    const buildPath = path.join(__dirname, '..', 'build');
+    const staticPath = path.join(__dirname, '..', 'build', 'static');
+
+    app.use('/', express.static(buildPath));
+    app.use('/static', express.static(staticPath));
     
     http.listen(PORT, function(){
         console.log(`listening on *:${PORT}`);

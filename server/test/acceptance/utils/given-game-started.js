@@ -1,10 +1,11 @@
 
 const {promiseGenerator} = require('./promise-generator');
 const {connectToSocket} = require('./connect-to-socket');
-const {CREATE_GAME, JOIN_TEAM, CAPTAIN_CLAIMED, OK, SUBMIT_CLUE, NEW_CLUE} = require('../../../../client/src/constants/message-types');
-const {RED, BLUE} = require('../../../../client/src/constants/colors');
+const constants = require('../../../src/constants');
 const Chance = require('chance');
 
+const {CREATE_GAME, JOIN_TEAM, CAPTAIN_CLAIMED, OK, SUBMIT_CLUE, NEW_CLUE} = constants.messageTypes;
+const {RED, BLUE} = constants.colors;
 const chance = new Chance();
 
 async function givenGameStarted() {

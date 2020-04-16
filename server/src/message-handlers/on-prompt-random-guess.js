@@ -1,4 +1,4 @@
-const {OK, ERROR, CHANGE_TURN} = require('../../../client/src/constants/message-types');
+const {OK, ERROR, CHANGE_TURN} = require('../constants').messageTypes;
 const {getGame} = require('../db');
 const {changeTurn} = require('./game-helpers');
 

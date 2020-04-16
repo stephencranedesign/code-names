@@ -1,8 +1,10 @@
 const Chance = require('chance');
 const {WORDS} = require('../words');
 const {setGame, getGameForNormalPlayer} = require('../db');
-const {RED, BLACK, BLUE, NEUTRAL} = require('../../../client/src/constants/colors');
-const {DECIDING_ROLES} = require('../../../client/src/constants/game-statuses');
+const constants = require('../constants');
+
+const {RED, BLACK, BLUE, NEUTRAL} = constants.colors;
+const {DECIDING_ROLES} = constants.gameStatuses;
 
 const chance = new Chance();
 

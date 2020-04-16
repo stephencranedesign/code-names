@@ -1,12 +1,13 @@
 const {expect} = require('chai');
 const {onChooseCard} = require('../../../src/message-handlers/on-choose-card');
-const {NEUTRAL, BLUE, BLACK, RED} = require('../../../../client/src/constants/colors');
+const constants = require('../../../src/constants');
 const {start, stop} = require('../utils/server');
 const {givenGameStarted, givenGameStartedWithClue} = require('../utils/given-game-started');
-const {CHOOSE_CARD, CARD_CHOOSEN, GAME_OVER} = require('../../../../client/src/constants/message-types');
 const {promiseGenerator} = require('../utils/promise-generator');
 const Chance = require('chance');
 
+const {NEUTRAL, BLUE, BLACK, RED} = constants.colors;
+const {CHOOSE_CARD, CARD_CHOOSEN, GAME_OVER} = constants.messageTypes;
 const chance = new Chance();
 
 describe('Acceptance Test: on choose card', () => {

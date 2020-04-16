@@ -2,17 +2,12 @@ sudo: required
 services:
   - docker
 
-branches:
-  only:
-  - master
-  - stable
-
 before_install:
-  - docker build -t stephencrane/code-names-client -f ./client/Dockerfile.dev ./client
-  - docker build -t stephencrane/code-names-server -f ./server/Dockerfile.dev ./server
+  - docker build -t stephencrane/code-names-ui -f ./ui/Dockerfile.dev ./ui
+  - docker build -t stephencrane/code-names-server -f ./Dockerfile.server.dev .
 
 script:
-  - docker run -e CI=true stephencrane/code-names-client npm test --
+  - docker run -e CI=true stephencrane/code-names-ui npm test --
   - docker run -e CI=true stephencrane/code-names-server npm test --
 
 after_success:

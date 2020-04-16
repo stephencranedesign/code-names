@@ -1,4 +1,4 @@
-const {OK, ERROR} = require('../../../client/src/constants/message-types');
+const {OK, ERROR} = require('../constants').messageTypes;
 const {getGameForNormalPlayer} = require('../db');
 
 function onJoinGame(message, {sendToSelf}) {

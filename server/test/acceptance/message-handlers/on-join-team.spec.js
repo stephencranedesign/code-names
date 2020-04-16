@@ -1,12 +1,13 @@
 const {expect} = require('chai');
 const {onChooseCard} = require('../../../src/message-handlers/on-choose-card');
-const {NEUTRAL, BLUE, BLACK, RED} = require('../../../../client/src/constants/colors');
+const constants = require('../../../src/constants');
 const {start, stop} = require('../utils/server');
 const {givenGameStarted, givenGameStartedWithClue} = require('../utils/given-game-started');
-const {JOIN_TEAM} = require('../../../../client/src/constants/message-types');
 const {promiseGenerator} = require('../utils/promise-generator');
 const Chance = require('chance');
 
+const {NEUTRAL, BLUE, BLACK, RED} = constants.colors;
+const {JOIN_TEAM} = constants.messageTypes;
 const chance = new Chance();
 
 describe('Acceptance Test: on join team', () => {

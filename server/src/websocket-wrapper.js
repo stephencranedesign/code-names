@@ -1,7 +1,9 @@
 const WebSocket = require('ws');
-const {EVERYONE, GAME, SELF} = require('../../client/src/constants/message-response-targets');
-const {OK} = require('../../client/src/constants/message-types');
+const constants = require('./constants');
 const {purgeOldGames} = require('./db');
+
+const {EVERYONE, GAME, SELF} = constants.messageResponseTargets;
+const {OK} = constants.messageTypes;
 
 function create(messageHandler) {
     const wss = new WebSocket.Server({ port: 8081 });

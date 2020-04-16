@@ -1,8 +1,10 @@
-const {CARD_CHOOSEN} = require('../../../client/src/constants/message-types');
-const {GAME_OVER} = require('../../../client/src/constants/game-statuses');
-const {NEUTRAL, RED, BLUE, BLACK} = require('../../../client/src/constants/colors');
+const constants = require('../constants');
 const {getGame} = require('../db');
 const {getOtherTeam, changeTurn} = require('./game-helpers');
+
+const {CARD_CHOOSEN} = constants.messageTypes;
+const {GAME_OVER} = constants.gameStatuses;
+const {NEUTRAL, RED, BLUE, BLACK} = constants.colors;
 
 function isOtherTeamsColor(fullGame, revealedCard) {
     return getOtherTeam(fullGame) === revealedCard.color
