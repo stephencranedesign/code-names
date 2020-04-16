@@ -1,0 +1,17 @@
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t stephencrane/code-names-client -f ./client/Dockerfile.dev ./client
+  - docker build -t stephencrane/code-names-server -f ./server/Dockerfile.dev ./server
+
+script:
+  - docker run -e CI=true stephencrane/code-names-client npm test --
+  - docker run -e CI=true stephencrane/code-names-server npm test --
+
+after_success:
+  - docker build -t stephencrane/code-names .
+  - docker login --username=stephenrusselcrane@gmail.com --password=pkSt/7NTQZX+PuwRH/V+WBv6TlZUtGFVF3/f0U2GUV35a1DIpFv2S+SZCigqenozOagHX+h8CH5F6suWgdCsTVLMoYmBVHbgcPr+xJkusCOpNqvkZs7v4Hjqa3udLJeTCKqt+x8F40Lt7sBtIv2hXppf0NCT/b+IraYCgyZPBTEkKwE8ar8VAP0VFT0kkpwABcIM38XLA7MMumCsXkeBfvP1FNg2gmJW/CYzET7iEqGcOhjZ0u6eYThqzlhAIbsZv3V+jLFt8cUC88EyThgTmyvjDrTElYuv90lYEkoPE0siZlL33Hu/eO7Yna9MSr8yjcz72/qoe2gCx5yuuM0BMr1qmBmCOc3yUMdGz602b4zDuwGtR0GDr2Wmbmmw85WGIs+bqKh/tLKEiJDqYvgshB4q4siWH7Xmxqx6t3Lc4Sr6qdU4miSTEOcrnfe9EcGLTTMTDxt1U4KxNXMUkOvV50RehqSxRipsCmriaNE55nhWaBy/g1zMmF1Onf5sDBso657dxioLJBQT3TX0+WfT0+CMtLHfAhHS5HfDy8a8wbZcT3/RRDAtVX9aSG7iV0ZHu5u+pFSXVUW3EZuBc9Qrx0gF3ZQvwu4pIk16gFB/HnE9eAzmcbLu9Uo1lpr4ieJCQlBCE1k5QS6tsxEmpq5vUncAzBkNhUyHqylvX6fPa2w= registry.heroku.com
+  - docker tag stephencrane/code-names registry.heroku.com/code-names/web
+  - docker push registry.heroku.com/code-names/web
