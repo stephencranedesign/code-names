@@ -2,6 +2,11 @@ sudo: required
 services:
   - docker
 
+branches:
+  only:
+  - master
+  - stable
+
 before_install:
   - docker build -t stephencrane/code-names-client -f ./client/Dockerfile.dev ./client
   - docker build -t stephencrane/code-names-server -f ./server/Dockerfile.dev ./server
