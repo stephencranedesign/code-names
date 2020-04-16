@@ -16,4 +16,3 @@ COPY . .
 COPY --from=builder /app/build /public
 
 CMD ["npm", "run", "start"]
-
