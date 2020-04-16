@@ -11,8 +11,6 @@ describe('UI Acceptance Tests: Game Board', () => {
         const state = givenGameBoardState();
         const card = getRandomCard(state);
         const {wrapper} = renderAppInState(state);
-
-        console.log('html: ', wrapper.debug());
     
         await chooseCard(wrapper, card, {
             type: CARD_CHOOSEN,
