@@ -2,8 +2,19 @@ import {promiseFactory, storePromise, getPromise} from './promise-factory';
 
 let onMessage = () => {};
 
+function determineWebsocketUrl() {
+    const {protocol, hostname} = global.location;
+    const actualProtocol = protocol === 'https:' ? 'wss:' : 'ws:';
+    const actualHostname = hostname === 'localhost' ? 'localhost' : hostname;
+    const port = 8081;
+
+    console.log('a: ', `${actualProtocol}//${actualHostname}:${port}`);
+
+    return `${actualProtocol}//${actualHostname}:${port}`;
+}
+
 // Create WebSocket connection.
-const socket = new WebSocket('ws://localhost:8081/');
+const socket = new WebSocket(determineWebsocketUrl());
 
 // Connection opened
 socket.addEventListener('open', (event) => {
