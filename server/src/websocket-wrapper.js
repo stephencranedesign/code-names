@@ -5,8 +5,8 @@ const {purgeOldGames} = require('./db');
 const {EVERYONE, GAME, SELF} = constants.messageResponseTargets;
 const {OK} = constants.messageTypes;
 
-function create(messageHandler) {
-    const wss = new WebSocket.Server({ port: 8081 });
+function create(server, messageHandler) {
+    const wss = new WebSocket.Server({server});
 
     wss.on('connection', function connection(ws) {
         ws.isAlive = true;

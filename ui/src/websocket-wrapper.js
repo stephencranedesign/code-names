@@ -3,14 +3,15 @@ import {promiseFactory, storePromise, getPromise} from './promise-factory';
 let onMessage = () => {};
 
 function determineWebsocketUrl() {
-    const {protocol, hostname} = global.location;
+    const {protocol, hostname, port} = global.location;
     const actualProtocol = protocol === 'https:' ? 'wss:' : 'ws:';
     const actualHostname = hostname === 'localhost' ? 'localhost' : hostname;
-    const port = 8081;
+    const actualPort = port == 3000 ? 3001 : port;
+    const url = `${actualProtocol}//${actualHostname}:${actualPort}`;
 
-    console.log('a: ', `${actualProtocol}//${actualHostname}:${port}`);
+    console.log({url});
 
-    return `${actualProtocol}//${actualHostname}:${port}`;
+    return url;
 }
 
 // Create WebSocket connection.
@@ -37,7 +38,7 @@ socket.addEventListener('message', (event) => {
 });
 
 socket.addEventListener('close', () => {
-    clearTimeout(this.pingTimeout);
+    // clearTimeout(this.pingTimeout);
 });
 
 function heartbeat() {
