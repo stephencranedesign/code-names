@@ -8,6 +8,18 @@ const reset = () => {
     db = {};
 }
 
+const toCardForNormalPlayer = (card) => {
+    if (!card.revealed) {
+        return {
+            id: card.id,
+            word: card.word,
+            revealed: card.word
+        }
+    }
+
+    return card;
+};
+
 const getGameForNormalPlayer = (id) => {
     const game = getGame(id);
 
@@ -15,11 +27,7 @@ const getGameForNormalPlayer = (id) => {
 
     return {
         ...game,
-        cards: game.cards.map(({id, word, revealed}) => ({
-            id,
-            word,
-            revealed
-        }))
+        cards: game.cards.map(toCardForNormalPlayer)
     };
 };
 
