@@ -235,4 +235,6 @@ const WORDS = [
     "year","yellow","yesterday","young","younger","youth","zero","zebra","zipper","zoo","zulu"
   ];
 
-module.exports = {WORDS};
+const CUSTOM = ["Harry Potter"];
+
+module.exports = {WORDS, CUSTOM};

@@ -1,5 +1,5 @@
 const Chance = require('chance');
-const {WORDS} = require('../words');
+const {WORDS, CUSTOM} = require('../words');
 const {setGame, getGameForNormalPlayer} = require('../db');
 const constants = require('../constants');
 
@@ -8,8 +8,21 @@ const {DECIDING_ROLES} = constants.gameStatuses;
 
 const chance = new Chance();
 
+function unique(array) {
+    const set = new Set();
+    const newArray = [];
+
+    array.forEach(item => set.add(item));
+    set.forEach(item => newArray.push(item));
+
+    return newArray;
+}
+
 const createGame = (gameId) => {
-    const unshuffledCaptainCards = chance.pickset(WORDS, 25).map((word, i) => {
+    const pool = WORDS.concat(CUSTOM);
+    const poolWithPossibleDuplicates = chance.pickset(pool, 50);
+    const uniquePool = unique(poolWithPossibleDuplicates);
+    const unshuffledCaptainCards = chance.pickset(uniquePool, 25).map((word, i) => {
         if (i < 9) { // 9 red
             return {
                 word,

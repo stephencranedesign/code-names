@@ -11,7 +11,7 @@
     "test:ui": "cd ./ui && npm run test",
     "test": "cross-env CI=true npm run test:server && cross-env CI=true npm run test:ui",
     "start": "concurrently --kill-others-on-fail \"npm run start:ui\" \"npm run start:server\"",
-    "deploy": "node ./deploy.js"
+    "deploy": "npm run test && node ./deploy.js"
   },
   "author": "",
   "license": "ISC",
