@@ -235,6 +235,13 @@ const WORDS = [
     "year","yellow","yesterday","young","younger","youth","zero","zebra","zipper","zoo","zulu"
   ];
 
-const CUSTOM = ["Harry Potter"];
+const CUSTOM = [
+  "apple", "agent", "bear", "bill", "bone", "buck", "cast", "cat", "cold", "comic", 
+  "contract", "cook", "cricket", "czech", "day",
+  "foot", "game", "gas", "glass", "ground", "head", "hollywood", "litter",
+  "limousine", "mammoth", "marble", "mine", "millionare", "mint", "mouse", "night", 
+  "nut", "oil", "pan", "paper", "penquin", "pin", "plate", "pole", "revolution", "screen", "shot", "slug",
+  "stadium", "staff", "superhero", "tail", "tick", "turkey", "washington", "well", "worm",
+];
 
 module.exports = {WORDS, CUSTOM};
