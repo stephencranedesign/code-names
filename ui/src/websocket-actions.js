@@ -1,9 +1,8 @@
 import {registerMessageHandler} from './websocket-wrapper';
 import {CAPTAIN_CLAIMED, GAME_STATUS_CHANGE, NEW_CLUE, CARD_CHOOSEN, GAME_OVER, CHANGE_TURN} from './constants/message-types';
-import {PLAYING} from './constants/game-statuses';
-import {GAME_BOARD, DECIDING_ROLES} from './constants/screens';
 import {setState, getRoles, getClues, getDefaultState} from './state-management';
 import {onCardChoosen} from './messages/on-card-choosen';
+import {onGameStatusChange} from './messages/on-game-status-change';
 
 const onMessage = (data) => {
     if (data.type === CAPTAIN_CLAIMED) {
@@ -14,10 +13,7 @@ const onMessage = (data) => {
         
         setState({roles});
     } else if (data.type === GAME_STATUS_CHANGE) {
-        const {gameStatus} = data;
-        const screen = gameStatus === PLAYING ? GAME_BOARD : DECIDING_ROLES;
-
-        setState({gameStatus, screen});
+        onGameStatusChange(data);
     } else if (data.type === NEW_CLUE) {
         const clues = getClues();
         clues.push(data.clue);
