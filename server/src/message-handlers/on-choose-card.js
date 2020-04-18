@@ -11,13 +11,13 @@ function isOtherTeamsColor(fullGame, revealedCard) {
 }
 
 function isColor(game, card, color) {
-    const masterCards = game.cards.find(o => o.word === card.word);
+    const masterCards = game.cards.find(o => o.id === card.id);
 
     return masterCards.color === color;
 }
 
 function revealCard({cards}, card) {
-    const masterCard = cards.find(c => c.word === card.word);
+    const masterCard = cards.find(c => c.id === card.id);
 
     masterCard.revealed = true;
     return masterCard;

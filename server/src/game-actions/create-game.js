@@ -2,6 +2,7 @@ const Chance = require('chance');
 const {WORDS, CUSTOM} = require('../words');
 const {setGame, getGameForNormalPlayer} = require('../db');
 const constants = require('../constants');
+const fetch = require('node-fetch');
 
 const {RED, BLACK, BLUE, NEUTRAL} = constants.colors;
 const {DECIDING_ROLES} = constants.gameStatuses;
@@ -18,43 +19,62 @@ function unique(array) {
     return newArray;
 }
 
-const createGame = (gameId) => {
-    const pool = WORDS.concat(CUSTOM);
-    const poolWithPossibleDuplicates = chance.pickset(pool, 50);
-    const uniquePool = unique(poolWithPossibleDuplicates);
-    const unshuffledCaptainCards = chance.pickset(uniquePool, 25).map((word, i) => {
+function assignColorsAndShuffle(cards) {
+    const unshuffled = cards.map((card, i) => {
         if (i < 9) { // 9 red
             return {
-                word,
+                ...card,
                 color: RED
             }
         } else if (i < 16) { // 8 blue
             return {
-                word,
+                ...card,
                 color: BLUE
             }
         } else if (i < 17) { // 1 black
             return {
-                word,
+                ...card,
                 color: BLACK
             }
         }
 
         return {
-            word,
+            ...card,
             color: NEUTRAL
         };
     });
 
-    const cards = chance.shuffle(unshuffledCaptainCards).map(({word, color}, i) => ({
+    return chance.shuffle(unshuffled).map((card, i) => ({
+        ...card,
         id: i,
-        word,
-        color,
         revealed: false
     }));
+}
+
+function createWordCards(array) {
+    const pool = WORDS.concat(CUSTOM);
+    const poolWithPossibleDuplicates = chance.pickset(pool, 50);
+    const uniquePool = unique(poolWithPossibleDuplicates);
+    const unshuffledCaptainCards = chance.pickset(uniquePool, 25).map(word => ({word}));
+    const cards = assignColorsAndShuffle(unshuffledCaptainCards);
+
+    return Promise.resolve(cards);
+}
+
+async function createPictureCards() {
+    const page = chance.integer({min: 1, max: 39});
+    const pics = await fetch(`https://picsum.photos/v2/list?page=${page}&limit=25`).then(res => res.json());
+    const urls = pics.map(({id}) => ({url: `https://picsum.photos/id/${id}/300/300`}));
+    
+    return assignColorsAndShuffle(urls);
+}
+
+const createGame = async (gameId, gameType) => {
+    const cardsPromise = gameType === constants.gameTypes.PICTURES ? createPictureCards() : createWordCards();
+    const cards = await cardsPromise;
     
     setGame(gameId, {
-        cards: cards,
+        cards,
         currentTeam: RED,
         clues: [],
         roles: {

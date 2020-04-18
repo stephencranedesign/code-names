@@ -13,7 +13,8 @@ const toCardForNormalPlayer = (card) => {
         return {
             id: card.id,
             word: card.word,
-            revealed: card.word
+            revealed: card.word,
+            url: card.url
         }
     }
 

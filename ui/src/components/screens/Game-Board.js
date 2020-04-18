@@ -17,16 +17,28 @@ const selectCard = (props, card) => async (e) => {
 };
 
 const getCardsClasses = (card) => {
-    return `${displayCardColorForCaptain(card)} ${displayRevealed(card)}`.trim()
+    return `${displayCardColorForCaptain(card)} ${displayRevealed(card)} ${displayGameType(card)}`.trim()
 };
 const displayCardColorForCaptain = (card) => card.color ? card.color.toLowerCase() : '';
 const displayRevealed = (card) => card.revealed ? 'revealed' : '';
-const toCard = (props) => (card, i) => (
-    <li className={getCardsClasses(card)} onClick={selectCard(props, card)} key={card.word}>
-        <span className='id'>{i+1}</span>
-        <span className='word'>{card.word}</span>
-    </li>
-);
+const displayGameType = (card) => card.url ? 'picture' : 'word';
+const toCard = (props) => (card, i) => {
+    if (card.word) {
+        return (
+            <li className={getCardsClasses(card)} onClick={selectCard(props, card)} key={card.id}>
+                <span className='id'>{i+1}</span>
+                <span className='word'>{card.word}</span>
+            </li>
+        );
+    }
+
+    return (
+        <li className={getCardsClasses(card)} onClick={selectCard(props, card)} key={card.id}>
+            <span className='id'>{i+1}</span>
+            <img className='img' src={card.url}/>
+        </li>
+    );
+};
 
 const renderGameInfo = (props) => {
     return (

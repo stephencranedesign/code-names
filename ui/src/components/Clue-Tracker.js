@@ -82,15 +82,21 @@ export class ClueTracker extends React.Component {
         }
     }
 
-    render() {
-        const clues = this.props.clues.map(toClue);
+    renderClues() {
+        if (this.props.clues.length === 0) {
+            return <li>{'no clues given.. wait for a clue.'}</li>
+        }
 
+        return this.props.clues.map(toClue);
+    }
+
+    render() {  
         return (
             <div className='clue-tracker'>
                 Clues:
                 <div className='clues'>
                     <ul>
-                        {clues}
+                        {this.renderClues()}
                     </ul>
                 </div>
                 {this.renderSumbitClue(this.props)}

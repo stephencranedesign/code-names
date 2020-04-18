@@ -5,7 +5,8 @@ import { set, storeState, getDefaultState } from './state-management';
 import { JoinGame } from './components/screens/Join-Game';
 import { DecidingRoles } from './components/screens/Deciding-Roles';
 import { GameOver } from './components/screens/Game-Over';
-import { HOME, DECIDING_ROLES, GAME_BOARD, JOIN_GAME, GAME_OVER } from './constants/screens';
+import {DecideGameType} from './components/screens/Decide-Game-Type';
+import { HOME, DECIDING_ROLES, GAME_BOARD, JOIN_GAME, GAME_OVER, DECIDING_GAME_TYPE } from './constants/screens';
 import { RED } from './constants/colors';
 import {listen} from './websocket-actions';
 import './App.css';
@@ -30,6 +31,8 @@ class App extends React.Component {
         return <GameBoard cards={this.state.cards} activeTeam={this.state.activeTeam} roles={this.state.roles} clues={this.state.clues} gameId={this.state.gameId} promptRandomGuess={this.state.promptRandomGuess} />
       case GAME_OVER:
         return <GameOver winner={this.state.winner} />
+      case DECIDING_GAME_TYPE:
+        return <DecideGameType />
       default:
         return <Home />;
     }

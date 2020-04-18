@@ -5,5 +5,6 @@ module.exports = {
     GAME_OVER,
     HOME: 'home',
     GAME_BOARD: 'game-board',
-    JOIN_GAME: 'join-game'
+    JOIN_GAME: 'join-game',
+    DECIDING_GAME_TYPE: 'deciding-game-type'
 };
