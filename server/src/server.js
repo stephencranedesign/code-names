@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const server = require('http').createServer(app);
 const path = require('path');
+const cors = require('cors');
 
 const {CREATE_GAME, OK, JOIN_GAME, ERROR, JOIN_TEAM, SUBMIT_CLUE, CHOOSE_CARD, PROMPT_RANDOM_GUESS_ANSWER} = require('./constants').messageTypes;
 const {getGameForNormalPlayer, getGame} = require('./db');
@@ -38,8 +39,12 @@ function start() {
     const buildPath = path.join(__dirname, '..', 'build');
     const staticPath = path.join(__dirname, '..', 'build', 'static');
 
-    app.use('/', express.static(buildPath));
+    app.use(express.static(buildPath));
     app.use('/static', express.static(staticPath));
+
+    app.get('/ping', cors(), (req, res) => {
+        res.send('pong');
+    });
 }
 
 function stop() {

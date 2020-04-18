@@ -23,8 +23,6 @@ socket.addEventListener('open', (event) => {
 
 // Listen for messages
 socket.addEventListener('message', (event) => {
-    // heartbeat();
-
     const data = JSON.parse(event.data);
     const storedPromise = getPromise(data.id);
 
@@ -39,13 +37,13 @@ socket.addEventListener('close', () => {
     // clearTimeout(this.pingTimeout);
 });
 
-function heartbeat() {
-    clearTimeout(this.pingTimeout);
+// function heartbeat() {
+//     clearTimeout(this.pingTimeout);
 
-    this.pingTimeout = setTimeout(() => {
-        this.close();
-    }, 30000 + 1000);
-}
+//     this.pingTimeout = setTimeout(() => {
+//         this.close();
+//     }, 30000 + 1000);
+// }
 
 export const send = (payload, type) => {
     const id = `${Math.round(Math.random() * 1000000)}-${Math.round(Math.random() * 1000000)}`;
