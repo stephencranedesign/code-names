@@ -1,49 +1,30 @@
 import {promiseFactory, storePromise, getPromise} from './promise-factory';
+import {openSocket} from './open-socket';
+
+let messageQueue = [];
+const sendMessages = () => {
+    if (messageQueue.length && socket) {
+        messageQueue.forEach((message) => {
+            socket.send(message);
+        });
+        messageQueue = [];
+    } else {
+        setTimeout(sendMessages, 100);
+    }
+};
 
 let onMessage = () => {};
+let socket;
 
-function determineWebsocketUrl() {
-    const {protocol, hostname, port} = global.location;
-    const actualProtocol = protocol === 'https:' ? 'wss:' : 'ws:';
-    const actualHostname = hostname === 'localhost' ? 'localhost' : hostname;
-    const actualPort = port == 3000 ? 3001 : port;
-    const url = `${actualProtocol}//${actualHostname}:${actualPort}`;
-
-    return url;
+async function ensureSocketStaysOpen(onMessage) {
+    socket = await openSocket({
+        onMessage,
+        onClose: () => {
+            socket = undefined;
+            ensureSocketStaysOpen(onMessage)
+        }
+    });
 }
-
-// Create WebSocket connection.
-const socket = new WebSocket(determineWebsocketUrl());
-
-// Connection opened
-socket.addEventListener('open', (event) => {
-    console.log('client opened', event);
-    // heartbeat();
-});
-
-// Listen for messages
-socket.addEventListener('message', (event) => {
-    const data = JSON.parse(event.data);
-    const storedPromise = getPromise(data.id);
-
-    if (storedPromise) {
-        storedPromise.resolve(data);
-    }
-
-    onMessage(data);
-});
-
-socket.addEventListener('close', () => {
-    // clearTimeout(this.pingTimeout);
-});
-
-// function heartbeat() {
-//     clearTimeout(this.pingTimeout);
-
-//     this.pingTimeout = setTimeout(() => {
-//         this.close();
-//     }, 30000 + 1000);
-// }
 
 export const send = (payload, type) => {
     const id = `${Math.round(Math.random() * 1000000)}-${Math.round(Math.random() * 1000000)}`;
@@ -55,11 +36,13 @@ export const send = (payload, type) => {
     });
     
     storePromise(id, promise);
-    socket.send(message);
+    messageQueue.push(message);
+    sendMessages();
 
     return promise.promise;
 };
 
-export const registerMessageHandler = (onMessageHandler) => {
+export const registerMessageHandler = async (onMessageHandler) => {
     onMessage = onMessageHandler;
+    ensureSocketStaysOpen(onMessage);
 };

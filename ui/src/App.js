@@ -8,7 +8,6 @@ import { GameOver } from './components/screens/Game-Over';
 import {DecideGameType} from './components/screens/Decide-Game-Type';
 import { HOME, DECIDING_ROLES, GAME_BOARD, JOIN_GAME, GAME_OVER, DECIDING_GAME_TYPE } from './constants/screens';
 import { RED } from './constants/colors';
-import {listen} from './websocket-actions';
 import './App.css';
 
 class App extends React.Component {
@@ -18,7 +17,6 @@ class App extends React.Component {
     this.state = getDefaultState();
 
     set(this.state, this.setState.bind(this));
-    listen();
   }
 
   getComponentForScreen() {

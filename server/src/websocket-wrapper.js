@@ -9,8 +9,14 @@ function create(server, messageHandler) {
     const wss = new WebSocket.Server({server});
 
     wss.on('connection', function connection(ws) {
+        console.log('connection');
+
         ws.isAlive = true;
-        ws.on('pong', heartbeat);
+
+        function heartbeat() {
+            ws.isAlive = true;
+        }
+
         ws.on('message', (data) => {
             const messageFromClient = JSON.parse(data);
 
@@ -62,11 +68,17 @@ function create(server, messageHandler) {
                 });
             }
 
+            if (messageFromClient.type === 'ping') {
+                heartbeat();
+
+                return;
+            }
+
             messageHandler(messageFromClient, {sendToEveryone, sendToGame, sendToSelf, sendToGameAndSelf});
         });
 
         ws.on('close', () => {
-            clearInterval(interval);
+            console.log('close');
 
             cleanOldGames(wss.clients);
         });
@@ -90,19 +102,16 @@ function create(server, messageHandler) {
         purgeOldGames(activeGameIds);
     }
 
-    function heartbeat() {
-        console.log('heartbeat server');
-        this.isAlive = true;
+    function ping() {
+        wss.clients.forEach(function each(client) {
+            if (client.isAlive === false) return client.terminate();
+    
+            client.isAlive = false;
+            client.send(JSON.stringify({type: 'pong'}));
+        });
     }
     
-    const interval = setInterval(function ping() {
-        wss.clients.forEach(function each(ws) {
-            if (ws.isAlive === false) return ws.terminate();
-    
-            ws.isAlive = false;
-            ws.ping(() => {});
-        });
-    }, 30000);
+    const interval = setInterval(ping, 10000);
 
     return wss;
 }
