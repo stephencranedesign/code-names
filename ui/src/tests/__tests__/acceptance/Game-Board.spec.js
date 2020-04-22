@@ -1,4 +1,5 @@
-import {whenSocketSends} from '../../mocks';
+import '../../mocks/fetch';
+import {whenSocketSends, givenSocketOpened} from '../../mocks/socket';
 import {renderAppInState, getDefaultState, givenGameBoardState, chance} from '../../utils';
 import {GAME_BOARD} from '../../../constants/screens';
 import {CHOOSE_CARD, CARD_CHOOSEN, GAME_OVER} from '../../../constants/message-types';
@@ -131,6 +132,7 @@ function getRandomCard(state) {
 }
 
 async function chooseCard(wrapper, card, response) {
+    await givenSocketOpened();
     const socketRecievedResponse = whenSocketSends({type: CHOOSE_CARD}).respondWith(response);
 
     const li = wrapper.find('.card-container .cards li');

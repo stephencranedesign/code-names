@@ -36,6 +36,11 @@ const onMessage = (data) => {
     }
 };
 
+let isListenerSet = false;
+
 export const listen = () => {
+    if (isListenerSet) return;
+
+    isListenerSet = true;
     registerMessageHandler(onMessage);
 }

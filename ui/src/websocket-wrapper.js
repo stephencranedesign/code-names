@@ -13,7 +13,6 @@ const sendMessages = () => {
     }
 };
 
-let onMessage = () => {};
 let socket;
 
 async function ensureSocketStaysOpen(onMessage) {
@@ -42,7 +41,6 @@ export const send = (payload, type) => {
     return promise.promise;
 };
 
-export const registerMessageHandler = async (onMessageHandler) => {
-    onMessage = onMessageHandler;
+export const registerMessageHandler = (onMessage) => {
     ensureSocketStaysOpen(onMessage);
 };

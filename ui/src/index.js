@@ -3,11 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import {pingServer} from './ping-server';
-import {listen} from './websocket-actions';
 
-pingServer();
-listen();
 ReactDOM.render(
   <React.StrictMode>
     <App />

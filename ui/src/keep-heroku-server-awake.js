@@ -1,3 +1,5 @@
+let isPinginServer = false;
+
 function getUrl() {
     if (global.location.hostname === 'localhost') {
         return 'http://localhost:3001/ping';
@@ -6,11 +8,14 @@ function getUrl() {
     return '/ping';
 }
 
-export const pingServer = (url = getUrl()) => {
+export const keepHerokuServerAwake = (url = getUrl()) => {
+    if (isPinginServer) return;
+
     console.log('pinging server');
     fetch(url);
+    isPinginServer = true;
 
     setTimeout(() => {
-        pingServer(url);
+        keepHerokuServerAwake(url);
     }, 50000);
 };

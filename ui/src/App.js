@@ -9,6 +9,8 @@ import {DecideGameType} from './components/screens/Decide-Game-Type';
 import { HOME, DECIDING_ROLES, GAME_BOARD, JOIN_GAME, GAME_OVER, DECIDING_GAME_TYPE } from './constants/screens';
 import { RED } from './constants/colors';
 import './App.css';
+import {listen} from './websocket-actions';
+import { keepHerokuServerAwake } from './keep-heroku-server-awake';
 
 class App extends React.Component {
   constructor(props) {
@@ -17,6 +19,8 @@ class App extends React.Component {
     this.state = getDefaultState();
 
     set(this.state, this.setState.bind(this));
+    keepHerokuServerAwake();
+    listen();
   }
 
   getComponentForScreen() {
