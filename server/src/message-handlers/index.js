@@ -4,5 +4,6 @@ const {onJoinTeam} = require('./on-join-team');
 const {onSubmitClue} = require('./on-submit-clue');
 const {onChooseCard} = require('./on-choose-card');
 const {onPromptRandomGuess} = require('./on-prompt-random-guess');
+const {onRejoinTeam} = require('./on-rejoin-team');
 
-module.exports = {onCreateGame, onJoinGame, onJoinTeam, onSubmitClue, onChooseCard, onPromptRandomGuess};
+module.exports = {onCreateGame, onJoinGame, onJoinTeam, onSubmitClue, onChooseCard, onPromptRandomGuess, onRejoinTeam};

@@ -1,13 +1,17 @@
 const {expect} = require('chai');
-const {onChooseCard} = require('../../../src/message-handlers/on-choose-card');
 const constants = require('../../../src/constants');
 const {start, stop} = require('../utils/server');
 const {givenGameStarted, givenGameStartedWithClue} = require('../utils/given-game-started');
-const {promiseGenerator} = require('../utils/promise-generator');
 const Chance = require('chance');
+const {
+    sendMessageAndAwaitResponseForAllClientsInGame,
+    listenForClientMessageOfType,
+    listenForAllMessagesToClient,
+    getCardFromGameWithColor
+} = require('../utils/helpers');
 
 const {NEUTRAL, BLUE, BLACK, RED} = constants.colors;
-const {CHOOSE_CARD, CARD_CHOOSEN, GAME_OVER} = constants.messageTypes;
+const {CHOOSE_CARD, OK, GAME_OVER} = constants.messageTypes;
 const chance = new Chance();
 
 describe('Acceptance Test: on choose card', () => {
@@ -25,7 +29,7 @@ describe('Acceptance Test: on choose card', () => {
             const message = chooseCardMessage(given.gameId, given.card);
 
             result.messagesForClientNotInGame = listenForAllMessagesToClient(given.clientNotInGame);
-            result.messages = await sendMessageAndAwaitResponseForAllClientsInGame(given.redTeamMember, message, given, CARD_CHOOSEN);
+            result.messages = await sendMessageAndAwaitResponseForAllClientsInGame(given.redTeamMember, message, given, CHOOSE_CARD);
         });
 
         it('should send message to all clients with revealed card and changing current team', async () => {
@@ -34,6 +38,7 @@ describe('Acceptance Test: on choose card', () => {
                     expect(message.revealedCard).to.have.property('word', given.card.word);
                     expect(message.revealedCard).to.have.property('color', NEUTRAL);
                     expect(message.revealedCard).to.have.property('id', given.card.id);
+                    expect(message).to.have.property('status', OK);
                     expect(message).to.have.property('currentTeam', BLUE);
                 });
             });
@@ -61,6 +66,7 @@ describe('Acceptance Test: on choose card', () => {
             const promises = result.messages.map(promise => {
                 return promise.then((message) => {
                     expect(message).to.have.property('winner', BLUE);
+                    expect(message).to.have.property('status', OK);
                 });
             });
 
@@ -80,7 +86,7 @@ describe('Acceptance Test: on choose card', () => {
             const message = chooseCardMessage(given.gameId, given.card);
 
             result.messagesForClientNotInGame = listenForAllMessagesToClient(given.clientNotInGame);
-            result.messages = await sendMessageAndAwaitResponseForAllClientsInGame(given.redTeamMember, message, given, CARD_CHOOSEN);
+            result.messages = await sendMessageAndAwaitResponseForAllClientsInGame(given.redTeamMember, message, given, CHOOSE_CARD);
         });
 
         it('should send message to all clients with revealed card and changing current team', async () => {
@@ -89,6 +95,7 @@ describe('Acceptance Test: on choose card', () => {
                     expect(message.revealedCard).to.have.property('word', given.card.word);
                     expect(message.revealedCard).to.have.property('color', BLUE);
                     expect(message.revealedCard).to.have.property('id', given.card.id);
+                    expect(message).to.have.property('status', OK);
                     expect(message).to.have.property('currentTeam', BLUE);
                 });
             });
@@ -114,7 +121,7 @@ describe('Acceptance Test: on choose card', () => {
             const message = chooseCardMessage(given.gameId, given.card);
 
             result.messagesForClientNotInGame = listenForAllMessagesToClient(given.clientNotInGame);
-            result.messages = await sendMessageAndAwaitResponseForAllClientsInGame(given.redTeamMember, message, given, CARD_CHOOSEN);
+            result.messages = await sendMessageAndAwaitResponseForAllClientsInGame(given.redTeamMember, message, given, CHOOSE_CARD);
         });
 
         it('should send message to all clients with revealed card and keep current team', async () => {
@@ -124,6 +131,7 @@ describe('Acceptance Test: on choose card', () => {
                     expect(message.revealedCard).to.have.property('color', RED);
                     expect(message.revealedCard).to.have.property('id', given.card.id);
                     expect(message).to.have.property('currentTeam', RED);
+                    expect(message).to.have.property('status', OK);
                     expect(message).to.have.property('promptRandomGuess', false);
                 });
             });
@@ -148,7 +156,7 @@ describe('Acceptance Test: on choose card', () => {
             const message = chooseCardMessage(given.gameId, given.card);
 
             result.messagesForClientNotInGame = listenForAllMessagesToClient(given.clientNotInGame);
-            result.messages = await sendMessageAndAwaitResponseForAllClientsInGame(given.redTeamMember, message, given, CARD_CHOOSEN);
+            result.messages = await sendMessageAndAwaitResponseForAllClientsInGame(given.redTeamMember, message, given, CHOOSE_CARD);
         });
 
         it('should send message to all clients with revealed card, keep current team, and prompt current team if they want to guess again', async () => {
@@ -158,6 +166,7 @@ describe('Acceptance Test: on choose card', () => {
                     expect(message.revealedCard).to.have.property('color', RED);
                     expect(message.revealedCard).to.have.property('id', given.card.id);
                     expect(message).to.have.property('currentTeam', RED);
+                    expect(message).to.have.property('status', OK);
                     expect(message).to.have.property('promptRandomGuess', true);
                 });
             });
@@ -185,8 +194,8 @@ describe('Acceptance Test: on choose card', () => {
             const message2 = chooseCardMessage(given.gameId, given.card2);
 
             result.messagesForClientNotInGame = listenForAllMessagesToClient(given.clientNotInGame);
-            result.messages1 = await sendMessageAndAwaitResponseForAllClientsInGame(given.redTeamMember, message1, given, CARD_CHOOSEN);
-            result.messages2 = await sendMessageAndAwaitResponseForAllClientsInGame(given.redTeamMember, message2, given, CARD_CHOOSEN);
+            result.messages1 = await sendMessageAndAwaitResponseForAllClientsInGame(given.redTeamMember, message1, given, CHOOSE_CARD);
+            result.messages2 = await sendMessageAndAwaitResponseForAllClientsInGame(given.redTeamMember, message2, given, CHOOSE_CARD);
         });
 
         it('should send message to all clients for first message with revealed card, keep current team, and prompt current team if they want to guess again', async () => {
@@ -196,6 +205,7 @@ describe('Acceptance Test: on choose card', () => {
                     expect(message.revealedCard).to.have.property('color', RED);
                     expect(message.revealedCard).to.have.property('id', given.card1.id);
                     expect(message).to.have.property('currentTeam', RED);
+                    expect(message).to.have.property('status', OK);
                     expect(message).to.have.property('promptRandomGuess', true);
                 });
             });
@@ -252,14 +262,14 @@ describe('Acceptance Test: on choose card', () => {
             const message8 = chooseCardMessage(given.gameId, given.card8);
             const message9 = chooseCardMessage(given.gameId, given.card9);
 
-            await sendMessageAndAwaitResponseForAllClientsInGame(given.redTeamMember, message1, given, CARD_CHOOSEN);
-            await sendMessageAndAwaitResponseForAllClientsInGame(given.redTeamMember, message2, given, CARD_CHOOSEN);
-            await sendMessageAndAwaitResponseForAllClientsInGame(given.redTeamMember, message3, given, CARD_CHOOSEN);
-            await sendMessageAndAwaitResponseForAllClientsInGame(given.redTeamMember, message4, given, CARD_CHOOSEN);
-            await sendMessageAndAwaitResponseForAllClientsInGame(given.redTeamMember, message5, given, CARD_CHOOSEN);
-            await sendMessageAndAwaitResponseForAllClientsInGame(given.redTeamMember, message6, given, CARD_CHOOSEN);
-            await sendMessageAndAwaitResponseForAllClientsInGame(given.redTeamMember, message7, given, CARD_CHOOSEN);
-            await sendMessageAndAwaitResponseForAllClientsInGame(given.redTeamMember, message8, given, CARD_CHOOSEN);
+            await sendMessageAndAwaitResponseForAllClientsInGame(given.redTeamMember, message1, given, CHOOSE_CARD);
+            await sendMessageAndAwaitResponseForAllClientsInGame(given.redTeamMember, message2, given, CHOOSE_CARD);
+            await sendMessageAndAwaitResponseForAllClientsInGame(given.redTeamMember, message3, given, CHOOSE_CARD);
+            await sendMessageAndAwaitResponseForAllClientsInGame(given.redTeamMember, message4, given, CHOOSE_CARD);
+            await sendMessageAndAwaitResponseForAllClientsInGame(given.redTeamMember, message5, given, CHOOSE_CARD);
+            await sendMessageAndAwaitResponseForAllClientsInGame(given.redTeamMember, message6, given, CHOOSE_CARD);
+            await sendMessageAndAwaitResponseForAllClientsInGame(given.redTeamMember, message7, given, CHOOSE_CARD);
+            await sendMessageAndAwaitResponseForAllClientsInGame(given.redTeamMember, message8, given, CHOOSE_CARD);
 
             result.messagesForClientNotInGame = listenForAllMessagesToClient(given.clientNotInGame);
             result.messagesWithAssertions = await sendMessageAndAwaitResponseForAllClientsInGame(given.redTeamMember, message9, given, GAME_OVER);
@@ -269,6 +279,7 @@ describe('Acceptance Test: on choose card', () => {
             const promises = result.messagesWithAssertions.map(promise => {
                 return promise.then((message) => {
                     expect(message).to.have.property('winner', RED);
+                    expect(message).to.have.property('status', OK);
                 });
             });
 
@@ -285,46 +296,6 @@ describe('Acceptance Test: on choose card', () => {
         stop();
     });
 });
-
-function getCardFromGameWithColor(game, color, otherCardsToExclude = []) {
-    return game.cards.find(card => card.color === color && !otherCardsToExclude.includes(card.word));
-}
-
-function listenForAllMessagesToClient(client) {
-    const messages = [];
-
-    client.setOnMessage((data) => {
-        messages.push(data);
-    });
-
-    return messages;
-}
-
-function listenForClientMessageOfType(client, type) {
-    const promise = promiseGenerator();
-
-    client.setOnMessage((data) => {
-        if (data.type === type) {
-            promise.resolve(data);
-        }
-    });
-
-    return promise.promise;
-}
-
-async function sendMessageAndAwaitResponseForAllClientsInGame(client, message, given, type) {
-    const responses = [
-        listenForClientMessageOfType(given.blueTeamCaptain, type),
-        listenForClientMessageOfType(given.redTeamCaptain, type),
-        listenForClientMessageOfType(given.blueTeamMember, type),
-        listenForClientMessageOfType(given.redTeamMember, type)
-    ];
-
-    client.sendMessage(message);
-    await Promise.all(responses);
-
-    return responses;
-}
 
 function chooseCardMessage(gameId, card) {
     return {

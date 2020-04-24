@@ -1,7 +1,7 @@
 const constants = require('../constants');
-const {getGameForNormalPlayer, getGame} = require('../db');
+const {getGameForNormalPlayer, getGameForCaptain, getGame, storeRoleForClientId} = require('../db');
 
-const {OK, ERROR, CAPTAIN_CLAIMED, GAME_STATUS_CHANGE} = constants.messageTypes;
+const {OK, ERROR, CAPTAIN_CLAIMED, GAME_STATUS_CHANGE, JOIN_TEAM} = constants.messageTypes;
 const {RED, BLUE} = constants.colors;
 const {PLAYING} = constants.gameStatuses;
 
@@ -47,20 +47,21 @@ function determineGameStatus(game) {
 }
 
 function respondToRoleSelection(message, isRequestSuccesful, fullGame, {sendToGame, sendToSelf}) {
-    const {id, payload} = message;
+    const {id, payload, clientId} = message;
     const {gameId, team, captain} = payload;
 
-    
-
     if (!captain) { // successful join team request
-        return sendToSelf({type: OK, id, game: getGameForNormalPlayer(gameId)});
+        storeRoleForClientId(gameId, clientId, team, false);
+
+        return sendToSelf(gameId, {type: JOIN_TEAM, status:OK, id, game: getGameForNormalPlayer(gameId)});
     }
 
     if (isRequestSuccesful) { // successful captain request
-        sendToGame(gameId, {type: CAPTAIN_CLAIMED, team});
-        sendToSelf({type: OK, id, game: fullGame});
+        storeRoleForClientId(gameId, clientId, team, true);
+        sendToGame(gameId, {type: CAPTAIN_CLAIMED, status: OK, team});
+        sendToSelf(gameId, {type: JOIN_TEAM, status: OK, id, game: getGameForCaptain(gameId)});
     } else { // failed captain request
-        sendToSelf({type: ERROR, id, reason: 'Someone else has already claimed captain :('});
+        sendToSelf(gameId, {type: JOIN_TEAM, status: ERROR, id, reason: 'Someone else has already claimed captain :('});
     }   
 }
 
@@ -74,7 +75,7 @@ function onJoinTeam(message, senders) {
     respondToRoleSelection(message, isRequestSuccesful, fullGame, senders);
 
     if (isGameReady) {
-        senders.sendToGame(gameId, {type: GAME_STATUS_CHANGE, gameStatus: PLAYING});
+        senders.sendToGame(gameId, {type: GAME_STATUS_CHANGE, status: OK, gameStatus: PLAYING});
     }
 }
 

@@ -82,7 +82,8 @@ const createGame = async (gameId, gameType) => {
             redTeamCaptainClaimed: false,
             blueTeamCount: 0,
             redTeamCount: 0,
-            chosenTeam: null
+            chosenTeam: null,
+            byId: {}
         },
         gameId,
         blueCorrectGuesses: 0,

@@ -26,9 +26,27 @@ const getGameForNormalPlayer = (id) => {
 
     if (!game) return null;
 
+    const modifiedRoles = {...game.roles};
+    delete modifiedRoles.byId;
+
     return {
         ...game,
-        cards: game.cards.map(toCardForNormalPlayer)
+        cards: game.cards.map(toCardForNormalPlayer),
+        roles: modifiedRoles
+    };
+};
+
+const getGameForCaptain = (id) => {
+    const game = getGame(id);
+
+    if (!game) return null;
+
+    const modifiedRoles = {...game.roles};
+    delete modifiedRoles.byId;
+
+    return {
+        ...game,
+        roles: modifiedRoles
     };
 };
 
@@ -40,4 +58,21 @@ const purgeOldGames = (activeGameIds) => {
     });
 };
 
-module.exports = {getGame, setGame, reset, getGameForNormalPlayer, purgeOldGames};
+function storeRoleForClientId(gameId, clientId, team, captain) {
+    const game = getGame(gameId);
+
+    game.roles.byId[clientId] = {
+        team,
+        captain
+    };
+}
+
+function getRoleForClientId(gameId, clientId) {
+    const game = getGame(gameId);
+
+    if (!game) return null;
+
+    return game.roles.byId[clientId];
+}
+
+module.exports = {getGame, setGame, reset, getGameForNormalPlayer, purgeOldGames, storeRoleForClientId, getRoleForClientId, getGameForCaptain};

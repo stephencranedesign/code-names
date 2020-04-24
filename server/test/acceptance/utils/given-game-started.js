@@ -1,12 +1,10 @@
 
-const {promiseGenerator} = require('./promise-generator');
+const {promiseGenerator, chance} = require('./helpers');
 const {connectToSocket} = require('./connect-to-socket');
 const constants = require('../../../src/constants');
-const Chance = require('chance');
 
 const {CREATE_GAME, JOIN_TEAM, CAPTAIN_CLAIMED, OK, SUBMIT_CLUE, NEW_CLUE} = constants.messageTypes;
 const {RED, BLUE} = constants.colors;
-const chance = new Chance();
 
 async function givenGameStarted() {
     const gameId = chance.integer({min: 1, max: 100});
@@ -50,8 +48,8 @@ async function givenConnectedTeamMembers(gameId) {
     const redTeamMember = await connectToSocket('ws://localhost:8081/');
     const blueTeamMember = await connectToSocket('ws://localhost:8081/');
 
-    const {game} = await joinGame(redTeamMember, gameId, RED, false);
-    await joinGame(blueTeamMember, gameId, BLUE, false);
+    const {game} = await joinGameAsRole(redTeamMember, gameId, RED, false, redTeamMember.clientId);
+    await joinGameAsRole(blueTeamMember, gameId, BLUE, false, blueTeamMember.clientId);
 
     return {
         redTeamMember,
@@ -65,8 +63,8 @@ async function givenConnectedTeamCaptains(gameId) {
     const blueTeamClient = await connectToSocket('ws://localhost:8081/');
     await givenGame(redTeamClient, gameId);
 
-    const {game} = await joinGame(redTeamClient, gameId, RED, true);
-    await joinGame(blueTeamClient, gameId, BLUE, true);
+    const {game} = await joinGameAsRole(redTeamClient, gameId, RED, true, redTeamClient.clientId);
+    await joinGameAsRole(blueTeamClient, gameId, BLUE, true, blueTeamClient.clientId);
 
     return {
         blueTeamCaptain: blueTeamClient,
@@ -80,7 +78,7 @@ async function givenGame(client, gameId) {
     const id = chance.string();
     const promise = promiseGenerator();
     client.setOnMessage((data) => {
-        if (data.id === id) {
+        if (data.type === CREATE_GAME, data.status === OK) {
             promise.resolve();
         }
     });
@@ -89,16 +87,16 @@ async function givenGame(client, gameId) {
     return promise.promise;
 }
 
-async function joinGame(client, gameId, team, captain) {
+async function joinGameAsRole(client, gameId, team, captain, clientId) {
     const id = chance.string();
     const promise = promiseGenerator();
 
     client.setOnMessage((data) => {
-        if (data.id === id && data.type === OK) {
+        if (data.type === JOIN_TEAM && data.status === OK) {
             promise.resolve(data);
         }
     });
-    client.sendMessage({type: JOIN_TEAM, id, payload: {gameId, team, captain}});
+    client.sendMessage({type: JOIN_TEAM, id, clientId, payload: {gameId, team, captain}});
 
     return promise.promise;
 }

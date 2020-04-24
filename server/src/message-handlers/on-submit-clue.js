@@ -7,7 +7,7 @@ function onSubmitClue(message, {sendToGame, sendToSelf}) {
 
     fullGame.clues.push(clue);
     sendToGame(gameId, {type: NEW_CLUE, clue});
-    sendToSelf({type: NEW_CLUE, clue});
+    sendToSelf(gameId, {type: NEW_CLUE, clue});
 }
 
 module.exports = {onSubmitClue};

@@ -9,8 +9,6 @@ function create(server, messageHandler) {
     const wss = new WebSocket.Server({server});
 
     wss.on('connection', function connection(ws) {
-        console.log('connection');
-
         ws.isAlive = true;
 
         function heartbeat() {
@@ -20,10 +18,10 @@ function create(server, messageHandler) {
         ws.on('message', (data) => {
             const messageFromClient = JSON.parse(data);
 
-            function sendToEveryone(messageToClient) {
+            function sendToEveryone(gameId, messageToClient) {
                 wss.clients.forEach(function each(client) {
                     if (client.readyState != WebSocket.OPEN) return;
-                    addGameIdToClient(messageToClient, client, isClientSender);
+                    addGameIdToClient(gameId, messageToClient, client, isClientSender);
 
                     client.send(JSON.stringify(messageToClient));
                 });
@@ -34,7 +32,7 @@ function create(server, messageHandler) {
                     if (client.readyState != WebSocket.OPEN) return;
 
                     const isClientSender = client === ws;
-                    addGameIdToClient(messageToClient, client, isClientSender);
+                    addGameIdToClient(gameId, messageToClient, client, isClientSender);
 
                     if (client.gameId == gameId && !isClientSender) {
                         client.send(JSON.stringify(messageToClient));
@@ -47,7 +45,7 @@ function create(server, messageHandler) {
                     if (client.readyState != WebSocket.OPEN) return;
 
                     const isClientSender = client === ws;
-                    addGameIdToClient(messageToClient, client, isClientSender);
+                    addGameIdToClient(gameId, messageToClient, client, isClientSender);
 
                     if (client.gameId == gameId) {
                         client.send(JSON.stringify(messageToClient));
@@ -55,12 +53,12 @@ function create(server, messageHandler) {
                 });
             }
 
-            function sendToSelf(messageToClient) {
+            function sendToSelf(gameId, messageToClient) {
                 wss.clients.forEach(function each(client) {
                     if (client.readyState != WebSocket.OPEN) return;
 
                     const isClientSender = client === ws;
-                    addGameIdToClient(messageToClient, client, isClientSender);
+                    addGameIdToClient(gameId, messageToClient, client, isClientSender);
 
                     if (isClientSender) {
                         client.send(JSON.stringify(messageToClient));
@@ -78,15 +76,13 @@ function create(server, messageHandler) {
         });
 
         ws.on('close', () => {
-            console.log('close');
-
             cleanOldGames(wss.clients);
         });
     });
 
-    function addGameIdToClient(messageToClient, client, isClientSender) {
-        if (messageToClient.type === OK && isClientSender) {
-            client.gameId = messageToClient.game.gameId;
+    function addGameIdToClient(gameId, messageToClient, client, isClientSender) {
+        if (messageToClient.status === OK && isClientSender) {
+            client.gameId = gameId;
         }
     }
 
