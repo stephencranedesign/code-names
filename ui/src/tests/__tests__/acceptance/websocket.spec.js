@@ -8,7 +8,7 @@ import { promiseFactory } from '../../../promise-factory';
 
 jest.mock('../../../state-management');
 
-describe.only('UI Acceptance Tests: Websocket', () => {
+describe('UI Acceptance Tests: Websocket', () => {
     let gameId, clientId;
     beforeEach(() => {
         gameId = chance.string();
@@ -26,7 +26,7 @@ describe.only('UI Acceptance Tests: Websocket', () => {
         const sentMessageType = chance.string();
         const responseMessageType = chance.string();
         const game = {
-            currentTurn: chance.integer({min: 1, max: 10}),
+            actionsTaken: chance.integer({min: 1, max: 10}),
             currentTeam: chance.string(),
             cards: chance.n(chance.object, chance.d6()),
             clues: chance.n(chance.object, chance.d6()),
@@ -58,9 +58,9 @@ describe.only('UI Acceptance Tests: Websocket', () => {
         expect(setState).toHaveBeenCalledWith({
             cards: game.cards,
             clues: game.clues,
-            gameStatus: game.status,
+            gameStatus: game.gameStatus,
             currentTeam: game.currentTeam,
-            currentTurn: game.currentTurn
+            actionsTaken: game.actionsTaken
         });
 
         await desiredMessageResponse;

@@ -13,7 +13,7 @@ const selectCard = (props, card) => async (e) => {
     if (!latestClue || latestClue.team !== activeTeam) return;
     if (activeTeam != roles.chosenTeam || roles.isCaptain) return;
 
-    await send({gameId, card}, CHOOSE_CARD);
+    await send({gameId, card, actionsTaken: props.actionsTaken}, CHOOSE_CARD);
 };
 
 const getCardsClasses = (card) => {

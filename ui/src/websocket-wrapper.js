@@ -6,7 +6,6 @@ import {setState} from './state-management';
 
 let messageQueue = [];
 const sendMessages = () => {
-    console.log('sendMessaged: ', messageQueue.length, ' | ', shouldSendMessages);
     if (messageQueue.length && shouldSendMessages) {
         messageQueue.forEach((message) => {
             socket.send(JSON.stringify(message));
@@ -25,7 +24,6 @@ async function ensureSocketStaysOpen(onMessage) {
     socket = await openSocket({
         onMessage,
         onClose: () => {
-            console.log('closing message queue');
             shouldSendMessages = false;
             isFirstSocket = false;
             ensureSocketStaysOpen(onMessage)
@@ -33,19 +31,17 @@ async function ensureSocketStaysOpen(onMessage) {
     });
 
     if (!isFirstSocket) {
-        console.log('byPassingMessageQueue');
         const gameId = sessionStorage.getItem('game-id');
         const {game} = await sendAndByPassMessageQueue({gameId}, SYNC_GAME);
 
         setState({
             cards: game.cards,
             clues: game.clues,
-            gameStatus: game.status,
+            gameStatus: game.gameStatus,
             currentTeam: game.currentTeam,
-            currentTurn: game.currentTurn
+            actionsTaken: game.actionsTaken
         });
 
-        console.log('opening message queue');
         shouldSendMessages = true;
     }
 }

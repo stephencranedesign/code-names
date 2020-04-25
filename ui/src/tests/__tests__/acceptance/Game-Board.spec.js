@@ -6,13 +6,13 @@ import {RED, BLUE, NEUTRAL, BLACK} from '../../../constants/colors';
 import { TeamTurnTracker } from '../../../components/Team-Turn-Tracker';
 import { ClueTracker } from '../../../components/Clue-Tracker';
 
-describe.skip('UI Acceptance Tests: Game Board', () => {
+describe('UI Acceptance Tests: Game Board', () => {
     test('when selecting a neutral card', async () => {
         const state = givenGameBoardState();
         const card = getRandomCard(state);
         const {wrapper} = renderAppInState(state);
     
-        await chooseCard(wrapper, card, {
+        await chooseCard(wrapper, state, card, {
             type: CHOOSE_CARD,
             status: OK,
             currentTeam: BLUE,
@@ -38,7 +38,7 @@ describe.skip('UI Acceptance Tests: Game Board', () => {
         const card = getRandomCard(state);
         const {wrapper} = renderAppInState(state);
     
-        await chooseCard(wrapper, card, {
+        await chooseCard(wrapper, state, card, {
             type: GAME_OVER,
             status: OK,
             winner: BLUE
@@ -53,7 +53,7 @@ describe.skip('UI Acceptance Tests: Game Board', () => {
         const card = getRandomCard(state);
         const {wrapper} = renderAppInState(state);
     
-        await chooseCard(wrapper, card, {
+        await chooseCard(wrapper, state, card, {
             type: CHOOSE_CARD,
             status: OK,
             currentTeam: BLUE,
@@ -79,7 +79,7 @@ describe.skip('UI Acceptance Tests: Game Board', () => {
         const card = getRandomCard(state);
         const {wrapper} = renderAppInState(state);
     
-        await chooseCard(wrapper, card, {
+        await chooseCard(wrapper, state, card, {
             type: CHOOSE_CARD,
             status: OK,
             currentTeam: RED,
@@ -134,9 +134,10 @@ function getRandomCard(state) {
     return chance.pickone(state.cards);
 }
 
-async function chooseCard(wrapper, card, response) {
+async function chooseCard(wrapper, state, card, response) {
     await givenSocketOpened();
-    const socketRecievedResponse = whenSocketSends({type: CHOOSE_CARD}).respondWith(response);
+    const actionsTaken = state.actionsTaken;
+    const socketRecievedResponse = whenSocketSends({type: CHOOSE_CARD, payload: {actionsTaken}}).respondWith(response);
 
     const li = wrapper.find('.card-container .cards li');
     li.at(card.id).props().onClick();

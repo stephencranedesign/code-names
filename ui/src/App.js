@@ -30,7 +30,7 @@ class App extends React.Component {
       case DECIDING_ROLES:
         return <DecidingRoles roles={this.state.roles} gameId={this.state.gameId} />
       case GAME_BOARD:
-        return <GameBoard cards={this.state.cards} activeTeam={this.state.activeTeam} roles={this.state.roles} clues={this.state.clues} gameId={this.state.gameId} promptRandomGuess={this.state.promptRandomGuess} />
+        return <GameBoard cards={this.state.cards} activeTeam={this.state.activeTeam} roles={this.state.roles} clues={this.state.clues} actionsTaken={this.state.actionsTaken} gameId={this.state.gameId} promptRandomGuess={this.state.promptRandomGuess} />
       case GAME_OVER:
         return <GameOver winner={this.state.winner} />
       case DECIDING_GAME_TYPE:

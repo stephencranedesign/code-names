@@ -62,22 +62,14 @@ function matchArray(actual, desired) {
 function containsKeys(actual, desired) {
     let match = true;
 
-    console.log('containsKeys check:');
     Object.keys(desired).forEach((key) => {
         if (!match) return;
-
-        if (desired[key] && actual[key]) {
-            console.log(desired[key], ' | ', actual[key]);
-            console.log(desired[key] instanceof Object, ' | ', actual[key] instanceof Object);
-        }
         
         if (desired[key] instanceof Array) {
-            console.log('comparing array')
             const actualIsArray = actual[key] && actual[key] instanceof Array;
 
             match = actualIsArray && matchArray(actual[key], desired[key]);
         } else if (desired[key] instanceof Object) {
-            console.log('comparing object');
             const actualIsObject = actual[key] && actual[key] instanceof Object;
             
             match = actualIsObject && containsKeys(actual[key], desired[key]);
@@ -85,8 +77,6 @@ function containsKeys(actual, desired) {
             match = false;
         }
     });
-
-    console.log('containsKeys check:', match);
 
     return match;
 }
@@ -149,18 +139,11 @@ function recursivelyCheckIfMessageSent(messageToMatch, messageToSend, promise, a
     const allSendCalls = webSocketInstances.reduce((acc, curr) => acc.concat(curr.send.mock.calls), []);
     const {onMessageHandler, activeIndex} = getActiveMessageHandler();
 
-    // console.log({onMessageHandler});
-
     const messageFound = onMessageHandler && allSendCalls.some((call) => {
         const parsedMessage = JSON.parse(call[0]);
 
-        console.log('************');
         if (containsKeys(parsedMessage, messageToMatch)) {
             if (activeIndex === getActiveIndex()) {
-                console.log('sending message');
-
-                console.log({parsedMessage});
-                console.log({messageToMatch});
 
                 onMessageHandler({
                     data: JSON.stringify({
@@ -177,8 +160,6 @@ function recursivelyCheckIfMessageSent(messageToMatch, messageToSend, promise, a
             }
         }
     });
-
-    // console.log({messageFound});
 
     if (!messageFound) {
         if (attempt < 100) {
