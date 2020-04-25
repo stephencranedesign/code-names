@@ -1,11 +1,15 @@
 import {promiseFactory, storePromise, getPromise} from './promise-factory';
 import {openSocket} from './open-socket';
+import {getClientId} from './get-client-id';
+import {SYNC_GAME} from './constants/message-types';
+import {setState} from './state-management';
 
 let messageQueue = [];
 const sendMessages = () => {
-    if (messageQueue.length && socket) {
+    console.log('sendMessaged: ', messageQueue.length, ' | ', shouldSendMessages);
+    if (messageQueue.length && shouldSendMessages) {
         messageQueue.forEach((message) => {
-            socket.send(message);
+            socket.send(JSON.stringify(message));
         });
         messageQueue = [];
     } else {
@@ -14,27 +18,64 @@ const sendMessages = () => {
 };
 
 let socket;
+let shouldSendMessages = true;
+let isFirstSocket = true;
 
 async function ensureSocketStaysOpen(onMessage) {
     socket = await openSocket({
         onMessage,
         onClose: () => {
-            socket = undefined;
+            console.log('closing message queue');
+            shouldSendMessages = false;
+            isFirstSocket = false;
             ensureSocketStaysOpen(onMessage)
         }
     });
+
+    if (!isFirstSocket) {
+        console.log('byPassingMessageQueue');
+        const gameId = sessionStorage.getItem('game-id');
+        const {game} = await sendAndByPassMessageQueue({gameId}, SYNC_GAME);
+
+        setState({
+            cards: game.cards,
+            clues: game.clues,
+            gameStatus: game.status,
+            currentTeam: game.currentTeam,
+            currentTurn: game.currentTurn
+        });
+
+        console.log('opening message queue');
+        shouldSendMessages = true;
+    }
 }
 
-export const send = (payload, type) => {
+const clientId = getClientId();
+function buildMessage(payload, type) {
     const id = `${Math.round(Math.random() * 1000000)}-${Math.round(Math.random() * 1000000)}`;
     const promise = promiseFactory();
-    const message = JSON.stringify({
+    const message = {
         payload,
         type,
-        id
-    });
-    
+        id,
+        clientId
+    };
+
     storePromise(id, promise);
+
+    return {message, promise};
+}
+
+const sendAndByPassMessageQueue = (payload, type) => {
+    const {message, promise} = buildMessage(payload, type);
+
+    socket.send(JSON.stringify(message));
+    return promise.promise;
+};
+
+export const send = (payload, type) => {
+    const {message, promise} = buildMessage(payload, type);
+    
     messageQueue.push(message);
     sendMessages();
 

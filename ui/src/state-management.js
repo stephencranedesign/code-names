@@ -1,6 +1,7 @@
 import {RED} from './constants/colors';
 import {HOME, GAME_BOARD} from './constants/screens';
 import {WORDS} from './constants/game-types';
+import {getClientId} from './get-client-id';
 
 let state;
 let setStateFunc;
@@ -36,5 +37,6 @@ export const getDefaultState = () => ({
     gameId: null,
     gameStatus: null,
     promptRandomGuess: false,
-    gameType: WORDS
+    gameType: WORDS,
+    clientId: getClientId()
 });

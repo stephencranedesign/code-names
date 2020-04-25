@@ -1,5 +1,5 @@
 import {registerMessageHandler} from './websocket-wrapper';
-import {CAPTAIN_CLAIMED, GAME_STATUS_CHANGE, NEW_CLUE, CARD_CHOOSEN, GAME_OVER, CHANGE_TURN} from './constants/message-types';
+import {CAPTAIN_CLAIMED, GAME_STATUS_CHANGE, NEW_CLUE, CHOOSE_CARD, GAME_OVER, CHANGE_TURN} from './constants/message-types';
 import {setState, getRoles, getClues, getDefaultState} from './state-management';
 import {onCardChoosen} from './messages/on-card-choosen';
 import {onGameStatusChange} from './messages/on-game-status-change';
@@ -19,7 +19,7 @@ const onMessage = (data) => {
         clues.push(data.clue);
 
         setState({clues});
-    } else if (data.type === CARD_CHOOSEN) {
+    } else if (data.type === CHOOSE_CARD) {
         onCardChoosen(data);
     } else if (data.type === GAME_OVER) {
         setState({
