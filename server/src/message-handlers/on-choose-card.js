@@ -2,7 +2,7 @@ const constants = require('../constants');
 const {getGame} = require('../db');
 const {getOtherTeam, changeTurn} = require('./game-helpers');
 
-const {CARD_CHOOSEN} = constants.messageTypes;
+const {CHOOSE_CARD, OK, GAME_OUT_OF_SYNC} = constants.messageTypes;
 const {GAME_OVER} = constants.gameStatuses;
 const {NEUTRAL, RED, BLUE, BLACK} = constants.colors;
 
@@ -11,13 +11,13 @@ function isOtherTeamsColor(fullGame, revealedCard) {
 }
 
 function isColor(game, card, color) {
-    const masterCards = game.cards.find(o => o.word === card.word);
+    const masterCards = game.cards.find(o => o.id === card.id);
 
     return masterCards.color === color;
 }
 
 function revealCard({cards}, card) {
-    const masterCard = cards.find(c => c.word === card.word);
+    const masterCard = cards.find(c => c.id === card.id);
 
     masterCard.revealed = true;
     return masterCard;
@@ -51,36 +51,51 @@ function handleCorrectGuess(fullGame, revealedCard, {sendToGameAndSelf}) {
     const lastClue = getLastClueForCorrectGuess(fullGame);
     const shouldChangeTurn = lastClue.correctGuesses > lastClue.number;
     const shouldPromptRandomGuess = lastClue.correctGuesses == lastClue.number;
+    const {actionsTaken} = fullGame;
 
     if (isGameOver) {
-        sendToGameAndSelf(gameId, {type: GAME_OVER, winner: fullGame.currentTeam});
+        sendToGameAndSelf(gameId, {type: GAME_OVER, status: OK, winner: fullGame.currentTeam});
     } else if (shouldChangeTurn) {
         changeTurn(fullGame);
-        sendToGameAndSelf(gameId, {type: CARD_CHOOSEN, revealedCard, currentTeam: fullGame.currentTeam, promptRandomGuess: false});
+        sendToGameAndSelf(gameId, {type: CHOOSE_CARD, status: OK, revealedCard, currentTeam: fullGame.currentTeam, promptRandomGuess: false, actionsTaken});
     } else if (shouldPromptRandomGuess) {
-        sendToGameAndSelf(gameId, {type: CARD_CHOOSEN, revealedCard, currentTeam: fullGame.currentTeam, promptRandomGuess: true});
+        sendToGameAndSelf(gameId, {type: CHOOSE_CARD, status: OK, revealedCard, currentTeam: fullGame.currentTeam, promptRandomGuess: true, actionsTaken});
     } else {
-        sendToGameAndSelf(gameId, {type: CARD_CHOOSEN, revealedCard, currentTeam: fullGame.currentTeam, promptRandomGuess: false});
+        sendToGameAndSelf(gameId, {type: CHOOSE_CARD, status: OK, revealedCard, currentTeam: fullGame.currentTeam, promptRandomGuess: false, actionsTaken});
+    }
+}
+
+function processCardChosen(message, senders, fullGame) {
+    const {sendToGameAndSelf} = senders;
+    const {gameId, card} = message.payload;
+    const revealedCard = revealCard(fullGame, card);
+
+    ++fullGame.actionsTaken;
+    const {actionsTaken} = fullGame;
+
+    if (isColor(fullGame, card, NEUTRAL)) {
+        changeTurn(fullGame)
+        sendToGameAndSelf(gameId, {type: CHOOSE_CARD, status: OK, revealedCard, currentTeam: fullGame.currentTeam, actionsTaken});
+    } else if (isColor(fullGame, card, BLACK)) {
+        fullGame.gameStatus = GAME_OVER;
+        sendToGameAndSelf(gameId, {type: GAME_OVER, status: OK, winner: getOtherTeam(fullGame)});
+    } else if (isOtherTeamsColor(fullGame, revealedCard)) {
+        changeTurn(fullGame);
+        sendToGameAndSelf(gameId, {type: CHOOSE_CARD, status: OK, actionsTaken, revealedCard, currentTeam: fullGame.currentTeam});
+    } else if (!isOtherTeamsColor(fullGame, revealedCard)) {
+        handleCorrectGuess(fullGame, revealedCard, senders);
     }
 }
 
 function onChooseCard(message, senders) {
-    const {sendToGameAndSelf} = senders;
-    const {gameId, card} = message.payload;
+    const {gameId, card, actionsTaken} = message.payload;
     const fullGame = getGame(gameId);
-    const revealedCard = revealCard(fullGame, card);
+    const clientInSyncWithRestOfGame = actionsTaken === fullGame.actionsTaken;
 
-    if (isColor(fullGame, card, NEUTRAL)) {
-        changeTurn(fullGame)
-        sendToGameAndSelf(gameId, {type: CARD_CHOOSEN, revealedCard, currentTeam: fullGame.currentTeam});
-    } else if (isColor(fullGame, card, BLACK)) {
-        fullGame.gameStatus = GAME_OVER;
-        sendToGameAndSelf(gameId, {type: GAME_OVER, winner: getOtherTeam(fullGame)});
-    } else if (isOtherTeamsColor(fullGame, revealedCard)) {
-        changeTurn(fullGame);
-        sendToGameAndSelf(gameId, {type: CARD_CHOOSEN, revealedCard, currentTeam: fullGame.currentTeam});
-    } else if (!isOtherTeamsColor(fullGame, revealedCard)) {
-        handleCorrectGuess(fullGame, revealedCard, senders);
+    if (clientInSyncWithRestOfGame) {
+        processCardChosen(message, senders, fullGame);
+    } else {
+        senders.sendToSelf(gameId, {type: GAME_OUT_OF_SYNC, status: OK});
     }
 }
 

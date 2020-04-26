@@ -5,19 +5,23 @@ const {purgeOldGames} = require('./db');
 const {EVERYONE, GAME, SELF} = constants.messageResponseTargets;
 const {OK} = constants.messageTypes;
 
-function create(messageHandler) {
-    const wss = new WebSocket.Server({ port: 8081 });
+function create(server, messageHandler) {
+    const wss = new WebSocket.Server({server});
 
     wss.on('connection', function connection(ws) {
         ws.isAlive = true;
-        ws.on('pong', heartbeat);
+
+        function heartbeat() {
+            ws.isAlive = true;
+        }
+
         ws.on('message', (data) => {
             const messageFromClient = JSON.parse(data);
 
-            function sendToEveryone(messageToClient) {
+            function sendToEveryone(gameId, messageToClient) {
                 wss.clients.forEach(function each(client) {
                     if (client.readyState != WebSocket.OPEN) return;
-                    addGameIdToClient(messageToClient, client, isClientSender);
+                    addGameIdToClient(gameId, messageToClient, client, isClientSender);
 
                     client.send(JSON.stringify(messageToClient));
                 });
@@ -28,7 +32,7 @@ function create(messageHandler) {
                     if (client.readyState != WebSocket.OPEN) return;
 
                     const isClientSender = client === ws;
-                    addGameIdToClient(messageToClient, client, isClientSender);
+                    addGameIdToClient(gameId, messageToClient, client, isClientSender);
 
                     if (client.gameId == gameId && !isClientSender) {
                         client.send(JSON.stringify(messageToClient));
@@ -41,7 +45,7 @@ function create(messageHandler) {
                     if (client.readyState != WebSocket.OPEN) return;
 
                     const isClientSender = client === ws;
-                    addGameIdToClient(messageToClient, client, isClientSender);
+                    addGameIdToClient(gameId, messageToClient, client, isClientSender);
 
                     if (client.gameId == gameId) {
                         client.send(JSON.stringify(messageToClient));
@@ -49,12 +53,12 @@ function create(messageHandler) {
                 });
             }
 
-            function sendToSelf(messageToClient) {
+            function sendToSelf(gameId, messageToClient) {
                 wss.clients.forEach(function each(client) {
                     if (client.readyState != WebSocket.OPEN) return;
 
                     const isClientSender = client === ws;
-                    addGameIdToClient(messageToClient, client, isClientSender);
+                    addGameIdToClient(gameId, messageToClient, client, isClientSender);
 
                     if (isClientSender) {
                         client.send(JSON.stringify(messageToClient));
@@ -62,19 +66,25 @@ function create(messageHandler) {
                 });
             }
 
+            if (messageFromClient.type === 'ping') {
+                heartbeat();
+
+                return;
+            }
+
             messageHandler(messageFromClient, {sendToEveryone, sendToGame, sendToSelf, sendToGameAndSelf});
         });
 
         ws.on('close', () => {
-            clearInterval(interval);
-
-            cleanOldGames(wss.clients);
+            setTimeout(() => {
+                cleanOldGames(wss.clients);
+            }, 20000);
         });
     });
 
-    function addGameIdToClient(messageToClient, client, isClientSender) {
-        if (messageToClient.type === OK && isClientSender) {
-            client.gameId = messageToClient.game.gameId;
+    function addGameIdToClient(gameId, messageToClient, client, isClientSender) {
+        if (messageToClient.status === OK && isClientSender) {
+            client.gameId = gameId;
         }
     }
 
@@ -85,24 +95,21 @@ function create(messageHandler) {
             gameIds.push(client.gameId);
         });
 
-        const activeGameIds = gameIds.filter(x => x);
+        const activeGameIds = gameIds.filter(x => x).map(x => String(x));
 
         purgeOldGames(activeGameIds);
     }
 
-    function heartbeat() {
-        console.log('heartbeat server');
-        this.isAlive = true;
+    function ping() {
+        wss.clients.forEach(function each(client) {
+            if (client.isAlive === false) return client.terminate();
+    
+            client.isAlive = false;
+            client.send(JSON.stringify({type: 'pong'}));
+        });
     }
     
-    const interval = setInterval(function ping() {
-        wss.clients.forEach(function each(ws) {
-            if (ws.isAlive === false) return ws.terminate();
-    
-            ws.isAlive = false;
-            ws.ping(() => {});
-        });
-    }, 30000);
+    const interval = setInterval(ping, 10000);
 
     return wss;
 }

@@ -1,57 +1,85 @@
 import {promiseFactory, storePromise, getPromise} from './promise-factory';
+import {openSocket} from './open-socket';
+import {getClientId} from './get-client-id';
+import {SYNC_GAME, OK} from './constants/message-types';
+import {setState} from './state-management';
 
-let onMessage = () => {};
-
-// Create WebSocket connection.
-const socket = new WebSocket('ws://localhost:8081/');
-
-// Connection opened
-socket.addEventListener('open', (event) => {
-    console.log('client opened', event);
-    // heartbeat();
-});
-
-// Listen for messages
-socket.addEventListener('message', (event) => {
-    // heartbeat();
-
-    const data = JSON.parse(event.data);
-    const storedPromise = getPromise(data.id);
-
-    if (storedPromise) {
-        storedPromise.resolve(data);
+let messageQueue = [];
+const sendMessages = () => {
+    if (messageQueue.length && shouldSendMessages) {
+        messageQueue.forEach((message) => {
+            socket.send(JSON.stringify(message));
+        });
+        messageQueue = [];
+    } else {
+        setTimeout(sendMessages, 100);
     }
+};
 
-    onMessage(data);
-});
+let socket;
+let shouldSendMessages = true;
+let isFirstSocket = true;
 
-socket.addEventListener('close', () => {
-    clearTimeout(this.pingTimeout);
-});
+async function ensureSocketStaysOpen(onMessage) {
+    socket = await openSocket({
+        onMessage,
+        onClose: () => {
+            shouldSendMessages = false;
+            isFirstSocket = false;
+            ensureSocketStaysOpen(onMessage)
+        }
+    });
 
-function heartbeat() {
-    clearTimeout(this.pingTimeout);
+    if (!isFirstSocket) {
+        const gameId = sessionStorage.getItem('game-id');
+        const {game, status} = await sendAndByPassMessageQueue({gameId}, SYNC_GAME);
 
-    this.pingTimeout = setTimeout(() => {
-        this.close();
-    }, 30000 + 1000);
+        if (status === OK) {
+            setState({
+                cards: game.cards,
+                clues: game.clues,
+                gameStatus: game.gameStatus,
+                currentTeam: game.currentTeam,
+                actionsTaken: game.actionsTaken
+            });
+
+            shouldSendMessages = true;
+        }
+    }
 }
 
-export const send = (payload, type) => {
+const clientId = getClientId();
+function buildMessage(payload, type) {
     const id = `${Math.round(Math.random() * 1000000)}-${Math.round(Math.random() * 1000000)}`;
     const promise = promiseFactory();
-    const message = JSON.stringify({
+    const message = {
         payload,
         type,
-        id
-    });
-    
+        id,
+        clientId
+    };
+
     storePromise(id, promise);
-    socket.send(message);
+
+    return {message, promise};
+}
+
+const sendAndByPassMessageQueue = (payload, type) => {
+    const {message, promise} = buildMessage(payload, type);
+
+    socket.send(JSON.stringify(message));
+    return promise.promise;
+};
+
+export const send = (payload, type) => {
+    const {message, promise} = buildMessage(payload, type);
+    
+    messageQueue.push(message);
+    sendMessages();
 
     return promise.promise;
 };
 
-export const registerMessageHandler = (onMessageHandler) => {
-    onMessage = onMessageHandler;
+export const registerMessageHandler = (onMessage) => {
+    ensureSocketStaysOpen(onMessage);
 };

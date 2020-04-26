@@ -1,7 +1,7 @@
-import {whenSocketSends} from '../../mocks';
+import {whenSocketSends, givenSocketOpened} from '../../mocks/socket';
 import {renderAppInState, getDefaultState, givenGameBoardState, chance} from '../../utils';
 import {GAME_BOARD} from '../../../constants/screens';
-import {CHOOSE_CARD, CARD_CHOOSEN, GAME_OVER} from '../../../constants/message-types';
+import {CHOOSE_CARD, GAME_OVER, OK} from '../../../constants/message-types';
 import {RED, BLUE, NEUTRAL, BLACK} from '../../../constants/colors';
 import { TeamTurnTracker } from '../../../components/Team-Turn-Tracker';
 import { ClueTracker } from '../../../components/Clue-Tracker';
@@ -12,8 +12,9 @@ describe('UI Acceptance Tests: Game Board', () => {
         const card = getRandomCard(state);
         const {wrapper} = renderAppInState(state);
     
-        await chooseCard(wrapper, card, {
-            type: CARD_CHOOSEN,
+        await chooseCard(wrapper, state, card, {
+            type: CHOOSE_CARD,
+            status: OK,
             currentTeam: BLUE,
             revealedCard: {
                 ...card,
@@ -37,8 +38,9 @@ describe('UI Acceptance Tests: Game Board', () => {
         const card = getRandomCard(state);
         const {wrapper} = renderAppInState(state);
     
-        await chooseCard(wrapper, card, {
+        await chooseCard(wrapper, state, card, {
             type: GAME_OVER,
+            status: OK,
             winner: BLUE
         });
 
@@ -51,8 +53,9 @@ describe('UI Acceptance Tests: Game Board', () => {
         const card = getRandomCard(state);
         const {wrapper} = renderAppInState(state);
     
-        await chooseCard(wrapper, card, {
-            type: CARD_CHOOSEN,
+        await chooseCard(wrapper, state, card, {
+            type: CHOOSE_CARD,
+            status: OK,
             currentTeam: BLUE,
             revealedCard: {
                 ...card,
@@ -76,8 +79,9 @@ describe('UI Acceptance Tests: Game Board', () => {
         const card = getRandomCard(state);
         const {wrapper} = renderAppInState(state);
     
-        await chooseCard(wrapper, card, {
-            type: CARD_CHOOSEN,
+        await chooseCard(wrapper, state, card, {
+            type: CHOOSE_CARD,
+            status: OK,
             currentTeam: RED,
             promptRandomGuess: false,
             revealedCard: {
@@ -130,8 +134,10 @@ function getRandomCard(state) {
     return chance.pickone(state.cards);
 }
 
-async function chooseCard(wrapper, card, response) {
-    const socketRecievedResponse = whenSocketSends({type: CHOOSE_CARD}).respondWith(response);
+async function chooseCard(wrapper, state, card, response) {
+    await givenSocketOpened();
+    const actionsTaken = state.actionsTaken;
+    const socketRecievedResponse = whenSocketSends({type: CHOOSE_CARD, payload: {actionsTaken}}).respondWith(response);
 
     const li = wrapper.find('.card-container .cards li');
     li.at(card.id).props().onClick();

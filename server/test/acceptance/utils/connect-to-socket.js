@@ -1,5 +1,5 @@
 const WebSocket = require('ws');
-const {promiseGenerator} = require('./promise-generator');
+const {promiseGenerator, chance} = require('./helpers');
 
 function connectToSocketImpl(url, onMessage, promise) {
     const ws = new WebSocket(url);
@@ -9,13 +9,19 @@ function connectToSocketImpl(url, onMessage, promise) {
     function sendMessage(data) {
         ws.send(JSON.stringify(data));
     }
+
+    function close() {
+        ws.close();
+    }
     
     ws.on('open', function open() {
         promise.resolve({
             setOnMessage: (handler) => {
                 onMessageHandler = handler
             },
-            sendMessage
+            sendMessage,
+            close,
+            clientId: chance.string()
         });
     });
     

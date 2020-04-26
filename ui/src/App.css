@@ -133,6 +133,11 @@
   font-size: .7em;
 }
 
+.cards li.picture {
+  padding: 0;
+  min-height: 300px;
+}
+
 .cards li:before {
   content: '';
   display: block;
@@ -141,6 +146,10 @@
   position: absolute;
   top: 0;
   right: 0;
+}
+
+.cards li.picture:before {
+  opacity: .9;
 }
 
 .captain .cards li:before {

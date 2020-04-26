@@ -15,5 +15,8 @@ module.exports = {
     CARD_CHOOSEN: 'card-choosen',
     GAME_OVER,
     PROMPT_RANDOM_GUESS_ANSWER: 'prompt-random-guess-answer',
-    CHANGE_TURN: 'change-turn'
+    CHANGE_TURN: 'change-turn',
+    SYNC_GAME: 'sync-game',
+    GAME_OUT_OF_SYNC: 'game-out-of-sync',
+    REJOIN_TEAM: 'rejoin-team'
 };

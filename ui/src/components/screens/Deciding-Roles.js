@@ -26,6 +26,7 @@ export class DecidingRoles extends React.Component {
     async chooseRole(team, captain) {
         const payload = {
             gameId: this.props.gameId,
+            clientId: this.props.clientId,
             team,
             captain
         };

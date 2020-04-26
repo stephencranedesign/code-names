@@ -9,12 +9,14 @@
     "test:server": "cd ./server && npm run test",
     "start:ui": "cd ./ui && npm run start",
     "test:ui": "cd ./ui && npm run test",
-    "test": "npm run test:server && npm run test:ui",
-    "start": "concurrently --kill-others-on-fail \"npm run start:ui\" \"npm run start:server\""
+    "test": "cross-env CI=true npm run test:server && cross-env CI=true npm run test:ui",
+    "start": "concurrently --kill-others-on-fail \"npm run start:ui\" \"npm run start:server\"",
+    "deploy": "npm run test && node ./deploy.js"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "concurrently": "^5.1.0"
+    "concurrently": "^5.1.0",
+    "cross-env": "^7.0.2"
   }
 }

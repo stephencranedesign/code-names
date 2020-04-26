@@ -1,4 +1,5 @@
 import React from 'react';
+
 import {mount} from 'enzyme';
 import App from '../App';
 import * as stateManagement from '../state-management';
@@ -9,7 +10,7 @@ import Chance from 'chance';
 
 export const renderAppInState = (state) => {
     const wrapper = mount(<App />);
-
+    
     stateManagement.setState(state);
     wrapper.update();
 
@@ -53,4 +54,24 @@ export function givenGameBoardState(roleOverrides = { chosenTeam: RED }, overrid
     }
 }
 
-export const chance = new Chance();
+class MyChance extends Chance {
+    constructor() {
+        super();
+    }
+
+    object() {
+        const keys = this.n(() => this.word(), this.d10());
+
+        return keys.reduce((acc, curr) => {
+            acc[curr] = this.string();
+
+            return acc;
+        }, {});
+    }
+
+    array() {
+        return this.n(this.object, this.d10())
+    }
+}
+
+export const chance = new MyChance();

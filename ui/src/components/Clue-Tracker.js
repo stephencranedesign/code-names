@@ -2,9 +2,9 @@ import React from 'react';
 import {SUBMIT_CLUE} from '../constants/message-types';
 import {send} from '../websocket-wrapper';
 
-function toClue(clue) {
+function toClue(clue, i) {
     return (
-        <li key={clue.word}>
+        <li key={clue.word + i}>
             <span className={`square ${clue.team}`}></span>
             <span className='clue'>{clue.word} for {clue.number}</span>
         </li>
@@ -14,6 +14,7 @@ function toClue(clue) {
 const DEFAULT_STATE = {
     wordForClue: '',
     numberForClue: '',
+    clueSubmitted: false,
     error: ''
 }
 
@@ -65,12 +66,26 @@ export class ClueTracker extends React.Component {
             const payload = {clue, gameId: this.props.gameId};
 
             send(payload, SUBMIT_CLUE);
-            this.setState({...DEFAULT_STATE});
+            this.setState({
+                ...DEFAULT_STATE,
+                team: this.props.roles.chosenTeam,
+                clueSubmitted: true
+            });
         }
     }
 
+    getLastClue() {
+        const [clue] = this.props.clues.slice(-1);
+
+        return clue;
+    }
+
     renderSumbitClue() {
-        if (this.props.roles.isCaptain && this.props.roles.chosenTeam === this.props.activeTeam) {
+        const clue = this.getLastClue();
+        const hasSubmittedClue = clue && clue.team == this.props.activeTeam;
+        const teamCaptain = this.props.roles.isCaptain && this.props.roles.chosenTeam === this.props.activeTeam;
+
+        if (teamCaptain && !hasSubmittedClue) {
             return (
                 <div className='submit-clue'>
                     {this.renderError()}
@@ -82,15 +97,21 @@ export class ClueTracker extends React.Component {
         }
     }
 
-    render() {
-        const clues = this.props.clues.map(toClue);
+    renderClues() {
+        if (this.props.clues.length === 0) {
+            return <li>{'no clues given.. wait for a clue.'}</li>
+        }
 
+        return this.props.clues.map(toClue);
+    }
+
+    render() {
         return (
             <div className='clue-tracker'>
                 Clues:
                 <div className='clues'>
                     <ul>
-                        {clues}
+                        {this.renderClues()}
                     </ul>
                 </div>
                 {this.renderSumbitClue(this.props)}
