@@ -11,7 +11,6 @@ function getUrl() {
 export const keepHerokuServerAwake = (url = getUrl()) => {
     if (isPinginServer) return;
 
-    console.log('pinging server');
     fetch(url);
     isPinginServer = true;
 

@@ -27,7 +27,7 @@ export const setState = obj => setStateFunc(obj);
 
 export const getDefaultState = () => ({
     activeTeam: RED,
-    actionsTaken: 1,
+    actionsTaken: 0,
     screen: HOME,
     roles: {
         blueTeamCaptainClaimed: false,

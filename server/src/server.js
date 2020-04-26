@@ -4,9 +4,9 @@ const server = require('http').createServer(app);
 const path = require('path');
 const cors = require('cors');
 
-const {CREATE_GAME, OK, JOIN_GAME, ERROR, JOIN_TEAM, SUBMIT_CLUE, CHOOSE_CARD, PROMPT_RANDOM_GUESS_ANSWER, REJOIN_TEAM} = require('./constants').messageTypes;
+const {CREATE_GAME, OK, JOIN_GAME, ERROR, JOIN_TEAM, SUBMIT_CLUE, CHOOSE_CARD, PROMPT_RANDOM_GUESS_ANSWER, REJOIN_TEAM, SYNC_GAME} = require('./constants').messageTypes;
 const {getGameForNormalPlayer, getGame} = require('./db');
-const {onCreateGame, onJoinGame, onJoinTeam, onSubmitClue, onChooseCard, onPromptRandomGuess, onRejoinTeam} = require('./message-handlers');
+const {onCreateGame, onJoinGame, onJoinTeam, onSubmitClue, onChooseCard, onPromptRandomGuess, onRejoinTeam, onSyncGame} = require('./message-handlers');
 
 const {create} = require('./websocket-wrapper');
 const PORT = process.env.PORT || 3001;
@@ -33,6 +33,8 @@ function start() {
             onPromptRandomGuess(message, senders);
         } else if(message.type === REJOIN_TEAM) {
             onRejoinTeam(message, senders);
+        } else if(message.type === SYNC_GAME) {
+            onSyncGame(message, senders);
         } else {
             console.log('no type for message: ', message);
         }

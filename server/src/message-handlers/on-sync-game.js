@@ -1,20 +1,20 @@
 const constants = require('../constants');
 const {getGameForNormalPlayer, getGame, getRoleForClientId, getGameForCaptain} = require('../db');
 
-const {REJOIN_TEAM, OK, ERROR} = constants.messageTypes;
+const {SYNC_GAME, OK, ERROR} = constants.messageTypes;
 const {RED, BLUE} = constants.colors;
 const {PLAYING} = constants.gameStatuses;
 
 function respondWithError(gameId, id, message, senders) {
     senders.sendToSelf(gameId, {
-        type: REJOIN_TEAM,
+        type: SYNC_GAME,
         status: ERROR,
         id,
         message
     });
 }
 
-function onRejoinTeam(message, senders) {
+function onSyncGame(message, senders) {
     const {payload, clientId, id} = message;
     const {gameId} = payload;
     const fullGame = getGame(gameId);
@@ -28,13 +28,11 @@ function onRejoinTeam(message, senders) {
     const {cards, gameStatus} = game;
 
     senders.sendToSelf(gameId, {
-        type: REJOIN_TEAM,
+        type: SYNC_GAME,
         game,
-        captain,
-        team,
         id,
         status: OK
     });
 }
 
-module.exports = {onRejoinTeam};
+module.exports = {onSyncGame};

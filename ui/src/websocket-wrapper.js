@@ -1,7 +1,7 @@
 import {promiseFactory, storePromise, getPromise} from './promise-factory';
 import {openSocket} from './open-socket';
 import {getClientId} from './get-client-id';
-import {SYNC_GAME} from './constants/message-types';
+import {SYNC_GAME, OK} from './constants/message-types';
 import {setState} from './state-management';
 
 let messageQueue = [];
@@ -32,17 +32,19 @@ async function ensureSocketStaysOpen(onMessage) {
 
     if (!isFirstSocket) {
         const gameId = sessionStorage.getItem('game-id');
-        const {game} = await sendAndByPassMessageQueue({gameId}, SYNC_GAME);
+        const {game, status} = await sendAndByPassMessageQueue({gameId}, SYNC_GAME);
 
-        setState({
-            cards: game.cards,
-            clues: game.clues,
-            gameStatus: game.gameStatus,
-            currentTeam: game.currentTeam,
-            actionsTaken: game.actionsTaken
-        });
+        if (status === OK) {
+            setState({
+                cards: game.cards,
+                clues: game.clues,
+                gameStatus: game.gameStatus,
+                currentTeam: game.currentTeam,
+                actionsTaken: game.actionsTaken
+            });
 
-        shouldSendMessages = true;
+            shouldSendMessages = true;
+        }
     }
 }
 

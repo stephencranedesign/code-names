@@ -52,7 +52,7 @@ const getGameForCaptain = (id) => {
 
 const purgeOldGames = (activeGameIds) => {
     Object.keys(db).forEach((key) => {
-        if (!activeGameIds.includes(Number(key))) {
+        if (!activeGameIds.includes(key)) {
             delete db[key];
         }
     });

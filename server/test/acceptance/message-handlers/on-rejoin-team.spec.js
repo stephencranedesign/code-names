@@ -139,8 +139,8 @@ describe('Acceptance Test: on rejoin team', () => {
 function rejoinTeam(gameId, clientId) {
     return {
         type: REJOIN_TEAM,
+        clientId,
         payload: {
-            clientId,
             gameId
         }
     }

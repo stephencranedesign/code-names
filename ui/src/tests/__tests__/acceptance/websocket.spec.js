@@ -26,7 +26,7 @@ describe('UI Acceptance Tests: Websocket', () => {
         const sentMessageType = chance.string();
         const responseMessageType = chance.string();
         const game = {
-            actionsTaken: chance.integer({min: 1, max: 10}),
+            actionsTaken: chance.integer({min: 0, max: 10}),
             currentTeam: chance.string(),
             cards: chance.n(chance.object, chance.d6()),
             clues: chance.n(chance.object, chance.d6()),
@@ -67,18 +67,4 @@ describe('UI Acceptance Tests: Websocket', () => {
 
         expect(successfullyRecievedMessage).toBe(true);
     });
-
-    // unreliable connection ..
-        // when reconnecting to game
-            // should update game state > cards, clues, turn, active team.
-            // should only send messages for currentTurn.
-    // loading app with clientId & gameId in sessionStorage .. 
-        // when clicking join game, 
-            // when clientId & gameId good
-                // should bypass the deciding roles screen and place them in game
-            // when either clientId or gameId good is not good
-                // should not bypass the deciding roles screen
-    // loading app without clientId in sessionStorage ..
-        // when clicking join game, 
-            // should not bypass the deciding roles screen
 });

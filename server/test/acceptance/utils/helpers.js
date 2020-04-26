@@ -1,4 +1,4 @@
-const {getGame} = require('../../../src/db');
+const {getGame, setGame} = require('../../../src/db');
 const Chance = require('chance');
 
 const chance = new Chance();
@@ -28,6 +28,16 @@ function listenForAllMessagesToClient(client) {
     });
 
     return messages;
+}
+
+function listenForAllMessagesToClients(clients) {
+    const array = [];
+
+    clients.forEach((client, i) => {
+        array.push(listenForAllMessagesToClient(client));
+    });
+
+    return array;
 }
 
 function listenForClientMessageOfType(client, type) {
@@ -62,6 +72,15 @@ function setGameStatus(gameId, status) {
     game.gameStatus = status;
 }
 
+function modifyGame(gameId, overrides) {
+    const game = getGame(gameId);
+
+    setGame(gameId, {
+        ...game,
+        ...overrides
+    });
+}
+
 module.exports = {
     promiseGenerator,
     sendMessageAndAwaitResponseForAllClientsInGame,
@@ -69,5 +88,7 @@ module.exports = {
     listenForAllMessagesToClient,
     getCardFromGameWithColor,
     chance,
-    setGameStatus
+    setGameStatus,
+    modifyGame,
+    listenForAllMessagesToClients
 };

@@ -11,6 +11,7 @@ export const startGame = async (gameType) => {
     const gameId = Math.round(Math.random() * 100000);
     await send({gameId, gameType}, CREATE_GAME);
 
+    sessionStorage.setItem('game-id', gameId);
     setState({screen: DECIDING_ROLES, gameId, gameType});
 };
 

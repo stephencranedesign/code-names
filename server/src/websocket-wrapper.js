@@ -76,7 +76,9 @@ function create(server, messageHandler) {
         });
 
         ws.on('close', () => {
-            cleanOldGames(wss.clients);
+            setTimeout(() => {
+                cleanOldGames(wss.clients);
+            }, 20000);
         });
     });
 
@@ -93,7 +95,7 @@ function create(server, messageHandler) {
             gameIds.push(client.gameId);
         });
 
-        const activeGameIds = gameIds.filter(x => x);
+        const activeGameIds = gameIds.filter(x => x).map(x => String(x));
 
         purgeOldGames(activeGameIds);
     }

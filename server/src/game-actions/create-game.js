@@ -88,7 +88,8 @@ const createGame = async (gameId, gameType) => {
         gameId,
         blueCorrectGuesses: 0,
         redCorrectGuesses: 0,
-        gameStatus: DECIDING_ROLES
+        gameStatus: DECIDING_ROLES,
+        actionsTaken: 0
     });
 
     return getGameForNormalPlayer(gameId);

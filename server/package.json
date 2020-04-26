@@ -7,7 +7,7 @@
     "start": "node ./src/index.js",
     "start:dev": "nodemon ./src/index.js",
     "copy-constants": "node ./copy-constants.js",
-    "test": "cross-env PORT=8081 mocha"
+    "test": "cross-env PORT=8081 mocha --exit"
   },
   "author": "",
   "license": "ISC",
