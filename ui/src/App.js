@@ -30,7 +30,7 @@ class App extends React.Component {
       case DECIDING_ROLES:
         return <DecidingRoles roles={this.state.roles} gameId={this.state.gameId} />
       case GAME_BOARD:
-        return <GameBoard cards={this.state.cards} activeTeam={this.state.activeTeam} roles={this.state.roles} clues={this.state.clues} actionsTaken={this.state.actionsTaken} gameId={this.state.gameId} promptRandomGuess={this.state.promptRandomGuess} />
+        return <GameBoard cards={this.state.cards} activeTeam={this.state.activeTeam} roles={this.state.roles} clues={this.state.clues} actionsTaken={this.state.actionsTaken} gameId={this.state.gameId} promptRandomGuess={this.state.promptRandomGuess} showClueTracker={this.state.showClueTracker} />
       case GAME_OVER:
         return <GameOver winner={this.state.winner} />
       case DECIDING_GAME_TYPE:
@@ -42,13 +42,14 @@ class App extends React.Component {
 
   renderClasses() {
     const classes = ['app'];
-    const {activeTeam, roles, screen} = this.state;
+    const {activeTeam, roles, screen, showClueTracker} = this.state;
     const {chosenTeam, isCaptain} = roles;
 
     classes.push(screen);
     if (chosenTeam) classes.push(`choosen-team-${chosenTeam}`);
     if (activeTeam) classes.push(`${activeTeam}-active`);
     if (isCaptain) classes.push('captain');
+    if (showClueTracker) classes.push('show-clue-tracker');
 
     return classes.join(' ');
   }

@@ -1,11 +1,11 @@
 .app {
   text-align: center;
-  min-height: 100vh;
+   height: 100vh;
   background-color: #282c34;
   font-size: calc(10px + 2vmin);
   color: #fff;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: 10px 1fr;
 }
 
 .container {
@@ -16,8 +16,9 @@
 }
 
 .card-container {
-  height: calc(100vh - 50px);
   overflow-y: scroll;
+  display: flex;
+  flex-flow: column;
 }
 
 .random-guess {
@@ -38,13 +39,44 @@
 
 .game-info {
   font-size: 10px;
-  padding: 10px;
   background-color: #3b3f4b;
-  border-bottom: 1px solid #a1a4ae;
+  display: flex;
+  flex-flow: row wrap;
 }
 
-.game-info span {
-  margin: 0 5px;
+.game-info > div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 auto;
+  box-shadow: 1px 1px #a1a4ae;
+  padding: 8px 10px;
+}
+
+.game-info .latest-clue {
+  font-size: 12px;
+}
+
+.latest-clue .clue {
+  margin-left: 8px;
+}
+
+.latest-clue .word {
+  font-size: 16px;
+  margin-right: 5px;
+}
+
+.latest-clue .number {
+  font-size: 16px;
+  margin-left: 5px;
+}
+
+.game-info .team {
+  border-left: 1px solid #a1a4ae;
+}
+
+.game-info .team .choosen-team {
+  margin-right: 5px;
 }
 
 .square {
@@ -88,17 +120,14 @@
 
 .team-turn-tracker {
   border-bottom: 1px solid #a1a4ae;
-}
-
-.team-turn-tracker div {
-  width: 50%;
-  display: inline-block;
-  padding: 10px 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-column-start: 1;
+  grid-column-end: 3;
 }
 
 .team-turn-tracker div:first-child {
   border-right: 1px solid #a1a4ae;
-  width: calc(50% - 1px);
 }
 
 .blue-active .team-turn-tracker .blue {
@@ -115,10 +144,10 @@
   flex-direction: row;
   flex-flow: wrap;
   margin: 0;
-  padding: 10px;
+  padding: 10px 26px;
   justify-content: center;
   overflow-y: scroll;
-  height: calc(100vh - 88px);
+  flex: 1 1 auto;
 }
 
 .cards li {
@@ -209,7 +238,7 @@
   background-color: #181a20;
   border-bottom: 1px solid #a1a4ae;
   text-align: left;
-  font-size: .7em;
+  display: none;
 }
 
 .clues {
@@ -237,33 +266,57 @@
   margin: 2px 0 0;
 }
 
-@media (min-width: 700px) {
-  .app.game-board {
-    display: grid;
-    grid-template-areas:
-    'team-turn-tracker team-turn-tracker team-turn-tracker team-turn-tracker team-turn-tracker team-turn-tracker'
-    'clue-tracker card-container card-container card-container card-container card-container'
-    'clue-tracker card-container card-container card-container card-container card-container';
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
+.clue-tracker-toggle {
+  position: fixed;
+  top: 15vh;
+  border-top: 1px solid #a1a4ae;
+  border-right: 1px solid #a1a4ae;
+  border-bottom: 1px solid #a1a4ae;
+  height: 70px;
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  width: 25px;
+  align-items: center;
+  cursor: pointer;
+  background-color: #3b3f4b;
+}
 
+.clue-tracker-toggle:hover {
+  background-color: #30333f;
+}
+
+.clue-tracker-toggle img {
+  margin-bottom: 5px;
+  width: 10px;
+}
+
+.app.game-board {
+  grid-template-columns: 1fr;
+}
+
+.app.game-board.show-clue-tracker {
+  grid-template-columns: 90% 1fr;
+}
+
+.app.game-board.show-clue-tracker .clue-tracker {
+  display: block;
+}
+
+.app.game-board.show-clue-tracker .cards,
+.app.game-board.show-clue-tracker .game-info {
+  visibility: hidden;
+}
+
+@media (min-width: 700px) {
   .container {
     flex: 1 1 400px;
-  }
-
-  .team-turn-tracker {
-    grid-area: team-turn-tracker;
   }
 
   .clue-tracker {
     border-right: 1px solid #a1a4ae;
     border-bottom: none;
-    grid-area: clue-tracker;
-    width: 250px;
-    display: flex;
-    flex-flow: column;
-    justify-content: flex-end;
+    font-size: .5em;
   }
 
   .clue-tracker .clues {
@@ -279,11 +332,20 @@
     flex: 0 1 auto;
   }
 
-  .card-container {
-    grid-area: card-container;
-  }
-
   .cards li {
     font-size: .8em;
+  }
+
+  .game-info > div:not(.latest-clue) {
+    flex: 0 1 auto;
+  }
+
+  .app.game-board.show-clue-tracker {
+    grid-template-columns: 250px 1fr;
+  }
+
+  .app.game-board.show-clue-tracker .cards,
+  .app.game-board.show-clue-tracker .game-info {
+    visibility: visible;
   }
 }

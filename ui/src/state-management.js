@@ -29,15 +29,19 @@ export const getDefaultState = () => ({
     activeTeam: RED,
     actionsTaken: 0,
     screen: HOME,
+    // screen: 'game-board',
     roles: {
         blueTeamCaptainClaimed: false,
         redTeamCaptainClaimed: false
     },
+    // clues: [{team: 'blue', word: 'testing', number: 2}],
+    // cards: Array(25).fill('').map((x,i) => ({word: 'test', id: i, revealed:false})), 
     clues: [],
-    cards: [], 
+    cards: [],
     gameId: null,
     gameStatus: null,
     promptRandomGuess: false,
     gameType: WORDS,
-    clientId: getClientId()
+    clientId: getClientId(),
+    showClueTracker: true
 });
